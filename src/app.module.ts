@@ -1,4 +1,5 @@
 import { Module, Provider } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
 import { AllExceptionsFilter } from 'library/all-exception/all-exception.filter';
 import { AppController } from './app.controller';
@@ -10,7 +11,12 @@ const allExceptionsFilterProvider: Provider = {
 };
 
 @Module({
-  imports: [],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: `environments/.${process.env.NODE_ENV}.env`,
+    }),
+  ],
   controllers: [AppController],
   providers: [AppService, allExceptionsFilterProvider],
 })
