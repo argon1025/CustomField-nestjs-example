@@ -25,5 +25,40 @@ module.exports = {
     // NOTE: nestjs환경에서 비활성화 해야하는 규칙
     'import/prefer-default-export': 'off',
     'class-methods-use-this': 'off',
+    "import/order": ["error", {
+      "newlines-between": "always",
+      "groups": ['builtin', 'external', 'type'],
+      "pathGroups": [
+        {
+          "pattern": "@nestjs/**",
+          "group": "builtin",
+        },
+        {
+          "pattern": "{.,..}/**/*.controller",
+          "group": "external",
+        },
+        {
+          "pattern": "{.,..}/**/*.service",
+          "group": "external",
+        },
+        {
+          "pattern": "{.,..}/**/*.module",
+          "group": "external",
+        },
+        {
+          "pattern": "**/type/**",
+          "group": "type",
+        },
+        {
+          "pattern": "**/dto/**",
+          "group": "type",
+        },
+      ],
+      "alphabetize": {
+        "order": 'asc',
+        "caseInsensitive": true,
+      },
+      "pathGroupsExcludedImportTypes": ["type"]
+    }]
   },
 };
