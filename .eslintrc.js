@@ -34,6 +34,10 @@ module.exports = {
           "group": "builtin",
         },
         {
+          "pattern": "@prisma/**",
+          "group": "builtin",
+        },
+        {
           "pattern": "{.,..}/**/*.controller",
           "group": "external",
         },
