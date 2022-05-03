@@ -1,0 +1,21 @@
+version: '3.9'
+services:
+  database:
+    image: mysql:8.0.28
+    container_name: sixshop_mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=sixshop
+      - MYSQL_USER=sixshop
+      - MYSQL_PASSWORD=sixshop
+    volumes:
+      - "./docker/mysql/mysql-data:/var/lib/mysql"
+    ports:
+      - "3306:3306"
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    networks:
+      - sixshop
+networks:
+  sixshop:
+    name: sixshopNetwork
+    driver: bridge
