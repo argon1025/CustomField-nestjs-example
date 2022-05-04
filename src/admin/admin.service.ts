@@ -80,4 +80,14 @@ export class AdminService {
 
     return adminData;
   }
+
+  async getMe(id: Admin['id']) {
+    const adminData = await this.adminRepository.findFirstById({
+      prismaClientService: this.prismaService,
+      id,
+    });
+    if (!adminData) throw new NotFoundException(NOT_FOUND_ADMIN_MESSAGE);
+
+    return adminData;
+  }
 }
