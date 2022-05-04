@@ -36,4 +36,16 @@ export class AdminRepository {
       where: { email, deletedAt: null },
     });
   }
+
+  findFirstById({
+    prismaClientService,
+    id,
+  }: {
+    prismaClientService: PrismaClientService;
+    id: Admin['id'];
+  }) {
+    return prismaClientService.admin.findFirst({
+      where: { id, deletedAt: null },
+    });
+  }
 }
