@@ -54,6 +54,10 @@ module.exports = {
           "group": "type",
         },
         {
+          "pattern": "**/error-message/**",
+          "group": "type",
+        },
+        {
           "pattern": "**/dto/**",
           "group": "type",
         },

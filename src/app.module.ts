@@ -9,6 +9,7 @@ import {
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 
+import { AdminModule } from './admin/admin.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AllExceptionsFilter } from 'library/all-exception/all-exception.filter';
@@ -52,6 +53,7 @@ const validationPipeProvider: Provider = {
       isGlobal: true,
       envFilePath: `environments/.${process.env.NODE_ENV}.env`,
     }),
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [
