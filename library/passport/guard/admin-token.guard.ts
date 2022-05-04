@@ -12,7 +12,7 @@ import {
 } from 'library/jwt/error-message/admin-token.error';
 
 @Injectable()
-class JwtRefreshToken extends AuthGuard('admin-token') {
+class AdminToken extends AuthGuard('admin-token') {
   // NOTE: 에러를 핸들링 한다
   handleRequest<TUser>(err: Error, user: TUser) {
     if (err) throw new ForbiddenException(JWT_VERIFICATION_FAIL_MESSAGE);
@@ -20,4 +20,4 @@ class JwtRefreshToken extends AuthGuard('admin-token') {
     return user;
   }
 }
-export const JwtRefreshTokenGuard = () => UseGuards(JwtRefreshToken);
+export const AdminTokenGuard = () => UseGuards(AdminToken);
