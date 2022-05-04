@@ -7,8 +7,8 @@ import { AdminJwtTokenPayload } from 'library/jwt/type/admin-jwt-token-payload.t
 export class TokenService {
   constructor(private readonly jwtService: JwtService) {}
 
-  // NOTE: 회원  가입, 수정에만 사용가능한 토큰
-  generateAuthToken(payload: AdminJwtTokenPayload) {
+  // NOTE: 관리자 토큰
+  generateAdminToken(payload: AdminJwtTokenPayload) {
     return this.jwtService.sign(payload);
   }
 }

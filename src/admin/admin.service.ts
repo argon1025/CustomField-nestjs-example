@@ -2,6 +2,8 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { Admin } from '@prisma/client';
 
@@ -14,6 +16,8 @@ import { AdminRepository } from 'src/admin/admin.repository';
 import {
   ADMIN_CREATE_FAIL_MESSAGE,
   ALREADY_JOINED_MESSAGE,
+  NOT_FOUND_ADMIN_MESSAGE,
+  NOT_MATCH_ADMIN_PASSWORD_MESSAGE,
 } from 'src/admin/error-message/admin.error';
 
 @Injectable()
@@ -57,5 +61,23 @@ export class AdminService {
     } catch (error) {
       throw new InternalServerErrorException(ADMIN_CREATE_FAIL_MESSAGE);
     }
+  }
+
+  async validateAdmin({
+    email,
+    password,
+  }: {
+    email: Admin['email'];
+    password: Admin['password'];
+  }) {
+    const adminData = await this.adminRepository.findFirstByEmail({
+      prismaClientService: this.prismaService,
+      email,
+    });
+    if (!adminData) throw new NotFoundException(NOT_FOUND_ADMIN_MESSAGE);
+    if (!this.cryptoService.comparePassword(password, adminData.password))
+      throw new UnauthorizedException(NOT_MATCH_ADMIN_PASSWORD_MESSAGE);
+
+    return adminData;
   }
 }
