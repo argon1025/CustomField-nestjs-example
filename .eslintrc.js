@@ -25,6 +25,7 @@ module.exports = {
     // NOTE: nestjs환경에서 비활성화 해야하는 규칙
     'import/prefer-default-export': 'off',
     'class-methods-use-this': 'off',
+    'max-classes-per-file': 'off',
     "import/order": ["error", {
       "newlines-between": "always",
       "groups": ['builtin', 'external', 'type'],
