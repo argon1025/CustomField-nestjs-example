@@ -3,9 +3,12 @@ import { Body, Controller, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { CookieService } from 'library/cookie/cookie.service';
 import { TokenService } from 'library/jwt/token.service';
-import { JoinAdmin, LoginAdmin } from 'src/admin/admin.decorator';
+import { AdminTokenData } from 'library/passport/decorator/admin-token.decorator';
+import { GetMeAdmin, JoinAdmin, LoginAdmin } from 'src/admin/admin.decorator';
 import { AdminService } from 'src/admin/admin.service';
 
+import { AdminJwtTokenPayload } from 'library/jwt/type/admin-jwt-token-payload.type';
+import { GetMeAdminResponseDto } from 'src/admin/dto/get-me-admin.dto';
 import { JoinAdminRequestBodyDto } from 'src/admin/dto/join-admin.dto';
 import { LoginAdminRequestBodyDto } from 'src/admin/dto/login-admin.dto';
 
@@ -37,5 +40,15 @@ export class AdminController {
     this.cookieService.setAdminTokenCookie({ response, token });
 
     return null;
+  }
+
+  @GetMeAdmin()
+  async getMeAdmin(@AdminTokenData() { id }: AdminJwtTokenPayload) {
+    const adminData = await this.adminService.getMe(id);
+    return new GetMeAdminResponseDto({
+      email: adminData.email,
+      name: adminData.name,
+      createdAt: adminData.createdAt,
+    });
   }
 }
