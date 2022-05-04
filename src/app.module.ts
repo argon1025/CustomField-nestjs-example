@@ -9,11 +9,9 @@ import {
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 
-import { AdminModule } from './admin/admin.module';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { AllExceptionsFilter } from 'library/all-exception/all-exception.filter';
 import { CountryCode } from 'library/constant/constant';
+import { AdminModule } from 'src/admin/admin.module';
 
 import { ExceptionMessageInterface } from 'library/all-exception/type/all-exception.type';
 
@@ -55,9 +53,7 @@ const validationPipeProvider: Provider = {
     }),
     AdminModule,
   ],
-  controllers: [AppController],
   providers: [
-    AppService,
     allExceptionsFilterProvider,
     classSerializerInterceptorProvider,
     validationPipeProvider,
