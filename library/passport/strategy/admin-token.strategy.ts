@@ -12,10 +12,10 @@ export class AdminTokenStrategy extends PassportStrategy(
   Strategy,
   'admin-token',
 ) {
-  constructor(private readonly configService: ConfigService) {
+  constructor(configService: ConfigService) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
-        (request) => request?.cookies[adminTokenCookiePayloadKey],
+        (request) => request?.cookies?.[adminTokenCookiePayloadKey],
       ]),
       ignoreExpiration: false,
       secretOrKey: configService.get<string>('JWT_ADMIN_SECRET_KEY'),
