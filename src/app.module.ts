@@ -12,6 +12,7 @@ import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { AllExceptionsFilter } from 'library/all-exception/all-exception.filter';
 import { CountryCode } from 'library/constant/constant';
 import { AdminModule } from 'src/admin/admin.module';
+import { StoreModule } from 'src/store/store.module';
 
 import { ExceptionMessageInterface } from 'library/all-exception/type/all-exception.type';
 
@@ -52,6 +53,7 @@ const validationPipeProvider: Provider = {
       envFilePath: `environments/.${process.env.NODE_ENV}.env`,
     }),
     AdminModule,
+    StoreModule,
   ],
   providers: [
     allExceptionsFilterProvider,
