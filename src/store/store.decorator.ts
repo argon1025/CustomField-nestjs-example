@@ -14,3 +14,10 @@ export const CreateStore = () =>
     }),
     AdminTokenGuard(),
   );
+
+export const CreateCustomField = () =>
+  applyDecorators(
+    Post(':storeId/custom-field'),
+    ApiOkResponse({ description: '커스텀 옵션 생성 성공', type: undefined }),
+    AdminTokenGuard(),
+  );
