@@ -132,4 +132,18 @@ export class CustomFieldService {
       }
     });
   }
+
+  getCustomField({
+    storeId,
+    origin,
+  }: {
+    storeId: Store['id'];
+    origin: Origin;
+  }) {
+    return this.customFieldRepository.findManyByIdAndOrigin({
+      prismaClientService: this.prismaService,
+      storeId,
+      origin,
+    });
+  }
 }

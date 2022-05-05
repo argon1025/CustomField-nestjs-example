@@ -1,8 +1,13 @@
-import { Body, Controller, Param } from '@nestjs/common';
+import { Body, Controller, Param, Query } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 
 import { AdminTokenData } from 'library/passport/decorator/admin-token.decorator';
 import { CustomFieldService } from 'src/store/custom-field/custom-field.service';
-import { CreateCustomField, CreateStore } from 'src/store/store.decorator';
+import {
+  CreateCustomField,
+  CreateStore,
+  GetCustomField,
+} from 'src/store/store.decorator';
 import { StoreService } from 'src/store/store.service';
 
 import { AdminJwtTokenPayload } from 'library/jwt/type/admin-jwt-token-payload.type';
@@ -10,6 +15,12 @@ import {
   CreateCustomFieldRequestBodyDto,
   CreateCustomFieldRequestQueryDto,
 } from 'src/store/custom-field/dto/create-custom-field.dto';
+import {
+  GetCustomFieldItem,
+  GetCustomFieldRequestParamDto,
+  GetCustomFieldRequestQueryDto,
+  GetCustomFieldResponseDto,
+} from 'src/store/custom-field/dto/get-custom-field.dto';
 import {
   CreateStoreRequestBodyDto,
   CreateStoreResponseDto,
@@ -47,5 +58,35 @@ export class StoreController {
       storeId,
     });
     return null;
+  }
+
+  @GetCustomField()
+  async getCustomField(
+    @Param() { storeId }: GetCustomFieldRequestParamDto,
+    @Query() { origin }: GetCustomFieldRequestQueryDto,
+  ) {
+    const result = (
+      await this.customFieldService.getCustomField({
+        storeId,
+        origin,
+      })
+    ).map((val): GetCustomFieldItem => {
+      return {
+        origin: val.origin,
+        require: val.require,
+        fieldType: val.fieldType,
+        isArray: val.isArray,
+        enumData: val.isEnum
+          ? (val.isEnum.content as Prisma.JsonArray)
+          : undefined,
+        defaultData: val.isDefault
+          ? (val.isDefault.content as Prisma.JsonArray)
+          : undefined,
+      };
+    });
+
+    return new GetCustomFieldResponseDto({
+      list: result,
+    });
   }
 }
