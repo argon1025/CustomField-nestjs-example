@@ -78,4 +78,19 @@ export class CustomFieldRepository {
       },
     });
   }
+
+  findManyByIdAndOrigin({
+    prismaClientService,
+    storeId,
+    origin,
+  }: {
+    prismaClientService: PrismaClientService;
+    storeId: CustomField['store'];
+    origin: Origin;
+  }) {
+    return prismaClientService.customField.findMany({
+      where: { store: storeId, origin, deletedAt: null },
+      include: { isDefault: true, isEnum: true },
+    });
+  }
 }
