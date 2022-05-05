@@ -27,4 +27,16 @@ export class StoreRepository {
       },
     });
   }
+
+  findFirstById({
+    prismaClientService,
+    id,
+  }: {
+    prismaClientService: PrismaClientService;
+    id: Store['id'];
+  }) {
+    return prismaClientService.store.findFirst({
+      where: { id, deletedAt: null },
+    });
+  }
 }
