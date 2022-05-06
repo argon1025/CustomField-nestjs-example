@@ -34,4 +34,22 @@ export class CustomerRepository {
   }) {
     return prismaClientService.customer.findFirst({ where: { email } });
   }
+
+  findFirstById({
+    prismaClientService,
+    id,
+  }: {
+    prismaClientService: PrismaClientService;
+    id: Customer['id'];
+  }) {
+    return prismaClientService.customer.findFirst({
+      where: { id },
+      include: {
+        CustomerCustomFields: {
+          where: { deletedAt: null },
+          include: { CustomField: true },
+        },
+      },
+    });
+  }
 }
