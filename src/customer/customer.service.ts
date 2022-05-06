@@ -4,6 +4,7 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { Customer, Origin } from '@prisma/client';
 
@@ -26,6 +27,8 @@ import { CreateCustomerCustomDataItemDto } from 'src/customer/dto/create-custome
 import {
   CUSTOMER_ALREADY_JOIN_MESSAGE,
   CUSTOMER_CREATE_FAIL_MESSAGE,
+  CUSTOMER_NOT_FOUND_MESSAGE,
+  NOT_MATCH_CUSTOMER_PASSWORD_MESSAGE,
 } from 'src/customer/error-message/customer.error';
 import { NOT_FOUND_STORE_MESSAGE } from 'src/store/error-message/store.error';
 
@@ -41,6 +44,24 @@ export class CustomerService {
     private readonly cryptoService: CryptoService,
     private readonly customerCustomFieldRepository: CustomerCustomFieldRepository,
   ) {}
+
+  async validateCustomer({
+    email,
+    password,
+  }: {
+    email: Customer['email'];
+    password: Customer['password'];
+  }) {
+    const customerData = await this.customerRepository.findFirstByEmail({
+      prismaClientService: this.prismaService,
+      email,
+    });
+    if (!customerData) throw new NotFoundException(CUSTOMER_NOT_FOUND_MESSAGE);
+    if (!this.cryptoService.comparePassword(password, customerData.password))
+      throw new UnauthorizedException(NOT_MATCH_CUSTOMER_PASSWORD_MESSAGE);
+
+    return customerData;
+  }
 
   async createCustomer({
     store,
