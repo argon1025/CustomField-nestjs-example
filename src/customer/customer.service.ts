@@ -63,6 +63,13 @@ export class CustomerService {
     return customerData;
   }
 
+  getMe({ id }: { id: Customer['id'] }) {
+    return this.customerRepository.findFirstById({
+      prismaClientService: this.prismaService,
+      id,
+    });
+  }
+
   async createCustomer({
     store,
     email,
