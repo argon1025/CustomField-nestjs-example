@@ -5,6 +5,7 @@ import { CustomerService } from './customer.service';
 import { CookieModule } from 'library/cookie/cookie.module';
 import { CryptoModule } from 'library/crypto/crypto.module';
 import { TokenModule } from 'library/jwt/token.module';
+import { CustomerTokenStrategy } from 'library/passport/strategy/customer-token.strategy';
 import { PrismaModule } from 'library/prisma/prisma.module';
 import { TimeModule } from 'library/time/time.module';
 import { UuidModule } from 'library/uuid/uuid.module';
@@ -28,6 +29,7 @@ import { StoreModule } from 'src/store/store.module';
     CustomerRepository,
     CustomerCustomFieldRepository,
     CustomerCustomFieldService,
+    CustomerTokenStrategy,
   ],
   controllers: [CustomerController],
 })
