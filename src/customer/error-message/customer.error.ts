@@ -11,3 +11,13 @@ export const CUSTOMER_ALREADY_JOIN_MESSAGE: ExceptionMessageInterface = {
   [CountryCode.KR]: '이미 가입된 회원입니다.',
   [CountryCode.EN]: 'Customer already joined',
 };
+
+export const CUSTOMER_NOT_FOUND_MESSAGE: ExceptionMessageInterface = {
+  [CountryCode.KR]: '회원정보를 찾을 수 없습니다.',
+  [CountryCode.EN]: 'Customer not found',
+};
+
+export const NOT_MATCH_CUSTOMER_PASSWORD_MESSAGE: ExceptionMessageInterface = {
+  [CountryCode.KR]: '패스워드가 일치하지 않습니다',
+  [CountryCode.EN]: 'Password do not match',
+};
