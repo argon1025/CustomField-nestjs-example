@@ -66,7 +66,7 @@ model Customer {
   id       String @id
   store    String
   name     String
-  email    String
+  email    String @unique
   password String
 
   Store                Store                 @relation(fields: [store], references: [id])
