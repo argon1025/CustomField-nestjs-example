@@ -27,3 +27,9 @@ export const DEFAULT_DATA_MUST_CONTAINED_ENUM_MESSAGE: ExceptionMessageInterface
     [CountryCode.KR]: 'Enum에서 정의한 원소들로만 기본데이터를 구성해야합니다.',
     [CountryCode.EN]: 'default data must contain enum data',
   };
+
+export const NEW_ENUM_MUST_CONTAINED_PREVIOUS_MESSAGE: ExceptionMessageInterface =
+  {
+    [CountryCode.KR]: '이전에 정의한 Enum 데이터가 모두 포함되어야합니다.',
+    [CountryCode.EN]: 'new enum data must be contained pervious data',
+  };
