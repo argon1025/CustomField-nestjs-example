@@ -66,4 +66,14 @@ export class StoreService {
 
     return store;
   }
+
+  // NOTE: 스토어가 존재하는지 확인합니다
+  async isExist({ storeId }: { storeId: Store['id'] }) {
+    const storeResult = await this.storeRepository.findFirstById({
+      prismaClientService: this.prismaService,
+      id: storeId,
+    });
+    if (!storeResult) throw new NotFoundException(NOT_FOUND_STORE_MESSAGE);
+    return storeResult;
+  }
 }
