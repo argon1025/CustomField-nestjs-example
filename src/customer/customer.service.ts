@@ -92,6 +92,7 @@ export class CustomerService {
         origin: Origin.Customer,
         storeId: store,
       });
+    console.log(storeCustomField);
 
     // NOTE: 스토어 가입시 요구하는 customData가 있을경우에 진행
     if (storeCustomField.length > 0) {

@@ -1,6 +1,8 @@
-import { Customer, CustomerCustomField } from '@prisma/client';
+import { Customer, CustomerCustomField, CustomField } from '@prisma/client';
 
 export class GetMeCustomerCustomFieldItemDto {
+  readonly name: CustomField['name'];
+
   readonly customFieldId: CustomerCustomField['id'];
 
   readonly content: any[];
