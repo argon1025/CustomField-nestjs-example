@@ -7,6 +7,7 @@ import {
   CreateCustomField,
   CreateStore,
   GetCustomField,
+  PatchCustomField,
 } from 'src/store/store.decorator';
 import { StoreService } from 'src/store/store.service';
 
@@ -21,6 +22,10 @@ import {
   GetCustomFieldRequestQueryDto,
   GetCustomFieldResponseDto,
 } from 'src/store/custom-field/dto/get-custom-field.dto';
+import {
+  PatchCustomFieldRequestBodyDto,
+  PatchCustomFieldRequestParamDto,
+} from 'src/store/custom-field/dto/patch-custom-field.dto';
 import {
   CreateStoreRequestBodyDto,
   CreateStoreResponseDto,
@@ -90,5 +95,19 @@ export class StoreController {
     return new GetCustomFieldResponseDto({
       list: result,
     });
+  }
+
+  @PatchCustomField()
+  async patchCustomField(
+    @AdminTokenData() { id }: AdminJwtTokenPayload,
+    @Param() { storeId }: PatchCustomFieldRequestParamDto,
+    @Body() patchCustomFieldRequestBodyDto: PatchCustomFieldRequestBodyDto,
+  ) {
+    await this.customFieldService.patchCustomField({
+      ...patchCustomFieldRequestBodyDto,
+      adminId: id,
+      storeId,
+    });
+    return null;
   }
 }
