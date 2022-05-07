@@ -14,29 +14,29 @@ import {
 export class CreateCustomerCustomDataItemDto {
   @IsString()
   @IsNotEmpty()
-  customFieldID: CustomField['id'];
+  readonly customFieldID: CustomField['id'];
 
   @IsArray()
   @ArrayNotEmpty()
-  content: any[];
+  readonly content: any[];
 }
 
 export class CreateCustomerRequestBodyDto {
   @IsString()
-  store: Customer['store'];
+  readonly store: Customer['store'];
 
   @IsString()
-  name: Customer['name'];
+  readonly name: Customer['name'];
 
   @IsEmail()
-  email: Customer['email'];
+  readonly email: Customer['email'];
 
   @IsString()
-  password: Customer['password'];
+  readonly password: Customer['password'];
 
   @IsOptional()
   @ArrayNotEmpty()
   @Type(() => CreateCustomerCustomDataItemDto)
   @ValidateNested({ each: true })
-  customData?: CreateCustomerCustomDataItemDto[];
+  readonly customData?: CreateCustomerCustomDataItemDto[];
 }

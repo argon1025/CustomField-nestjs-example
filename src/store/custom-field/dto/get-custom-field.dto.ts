@@ -7,37 +7,37 @@ import { IsEnum, IsString } from 'class-validator';
 export class GetCustomFieldRequestParamDto {
   @Type(() => String)
   @IsString()
-  storeId: Store['id'];
+  readonly storeId: Store['id'];
 }
 
 export class GetCustomFieldRequestQueryDto {
   @ApiProperty({ enum: Origin })
   @IsEnum(Origin)
-  origin: Origin;
+  readonly origin: Origin;
 }
 
 export class GetCustomFieldItem {
-  id: CustomField['id'];
+  readonly id: CustomField['id'];
 
-  name: CustomField['name'];
+  readonly name: CustomField['name'];
 
   @ApiProperty({ enum: Origin })
-  origin: Origin;
+  readonly origin: Origin;
 
-  require: CustomField['require'];
+  readonly require: CustomField['require'];
 
   @ApiProperty({ enum: FieldType })
-  fieldType: FieldType;
+  readonly fieldType: FieldType;
 
-  isArray: CustomField['isArray'];
+  readonly isArray: CustomField['isArray'];
 
-  enumData?: any[];
+  readonly enumData?: any[];
 
-  defaultData?: any[];
+  readonly defaultData?: any[];
 }
 
 export class GetCustomFieldResponseDto {
-  list: GetCustomFieldItem[];
+  readonly list: GetCustomFieldItem[];
 
   constructor(required: Required<GetCustomFieldResponseDto>) {
     Object.assign(this, required);

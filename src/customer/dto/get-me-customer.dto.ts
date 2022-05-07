@@ -1,21 +1,21 @@
 import { Customer, CustomerCustomField } from '@prisma/client';
 
 export class GetMeCustomerCustomFieldItemDto {
-  customFieldId: CustomerCustomField['id'];
+  readonly customFieldId: CustomerCustomField['id'];
 
-  content: any[];
+  readonly content: any[];
 }
 
 export class GetMeCustomerResponseDto {
-  userId: Customer['id'];
+  readonly userId: Customer['id'];
 
-  storeId: Customer['store'];
+  readonly storeId: Customer['store'];
 
-  name: Customer['name'];
+  readonly name: Customer['name'];
 
-  email: Customer['email'];
+  readonly email: Customer['email'];
 
-  customField?: GetMeCustomerCustomFieldItemDto[];
+  readonly customField?: GetMeCustomerCustomFieldItemDto[];
 
   constructor(require: Required<GetMeCustomerResponseDto>) {
     Object.assign(this, require);

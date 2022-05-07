@@ -6,9 +6,9 @@ import { IsString } from 'class-validator';
 export class DeleteCustomFieldRequestParamDto {
   @Type(() => String)
   @IsString()
-  storeId: Store['id'];
+  readonly storeId: Store['id'];
 
   @Type(() => String)
   @IsString()
-  customFieldId: CustomField['id'];
+  readonly customFieldId: CustomField['id'];
 }

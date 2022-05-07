@@ -15,35 +15,35 @@ import {
 export class CreateCustomFieldRequestBodyDto {
   @ApiProperty({ enum: Origin })
   @IsEnum(Origin)
-  origin: Origin;
+  readonly origin: Origin;
 
   @IsString()
-  name: CustomField['name'];
+  readonly name: CustomField['name'];
 
   @IsBoolean()
-  require: CustomField['require'];
+  readonly require: CustomField['require'];
 
   @ApiProperty({ enum: FieldType })
   @IsEnum(FieldType)
-  fieldType: FieldType;
+  readonly fieldType: FieldType;
 
   @IsBoolean()
-  isArray: CustomField['isArray'];
+  readonly isArray: CustomField['isArray'];
 
   @IsOptional()
   @IsArray()
   @ArrayUnique()
   @ArrayNotEmpty()
-  enumData?: any[];
+  readonly enumData?: any[];
 
   @IsOptional()
   @IsArray()
   @ArrayNotEmpty()
-  defaultData?: any[];
+  readonly defaultData?: any[];
 }
 
 export class CreateCustomFieldRequestQueryDto {
   @Type(() => String)
   @IsString()
-  storeId: Store['id'];
+  readonly storeId: Store['id'];
 }

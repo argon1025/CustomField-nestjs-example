@@ -11,26 +11,26 @@ import {
 
 export class PatchCustomFieldRequestBodyDto {
   @IsString()
-  id: CustomField['id'];
+  readonly id: CustomField['id'];
 
   @IsOptional()
   @IsString()
-  name?: CustomField['name'];
+  readonly name?: CustomField['name'];
 
   @IsOptional()
   @IsArray()
   @ArrayUnique()
   @ArrayNotEmpty()
-  enumData?: any[];
+  readonly enumData?: any[];
 
   @IsOptional()
   @IsArray()
   @ArrayNotEmpty()
-  defaultData?: any[];
+  readonly defaultData?: any[];
 }
 
 export class PatchCustomFieldRequestParamDto {
   @Type(() => String)
   @IsString()
-  storeId: Store['id'];
+  readonly storeId: Store['id'];
 }

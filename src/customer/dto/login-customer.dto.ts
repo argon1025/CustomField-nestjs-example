@@ -5,9 +5,9 @@ import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 export class LoginCustomerRequestBodyDto {
   @IsEmail()
   @IsNotEmpty()
-  email: Customer['email'];
+  readonly email: Customer['email'];
 
   @IsString()
   @IsNotEmpty()
-  password: Customer['password'];
+  readonly password: Customer['password'];
 }
