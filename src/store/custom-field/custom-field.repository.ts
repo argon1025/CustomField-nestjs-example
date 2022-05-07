@@ -95,4 +95,64 @@ export class CustomFieldRepository {
       include: { isDefault: true, isEnum: true },
     });
   }
+
+  findFirstById({
+    prismaClientService,
+    id,
+  }: {
+    prismaClientService: PrismaClientService;
+    id: CustomField['id'];
+  }) {
+    return prismaClientService.customField.findFirst({
+      where: { id, deletedAt: null },
+      include: { isDefault: true, isEnum: true },
+    });
+  }
+
+  updateById({
+    prismaClientService,
+    id,
+    name,
+  }: {
+    prismaClientService: PrismaClientService;
+    id: CustomField['id'];
+    name: CustomField['name'];
+  }) {
+    return prismaClientService.customField.update({
+      where: { id },
+      data: { name },
+    });
+  }
+
+  updateEnumById({
+    prismaClientService,
+    id,
+    enumData,
+  }: {
+    prismaClientService: PrismaClientService;
+    id: CustomFieldEnumData['id'];
+    enumData: any[];
+  }) {
+    const json = enumData as Prisma.JsonArray;
+    return prismaClientService.customFieldEnumData.update({
+      where: { id },
+      data: { content: json },
+    });
+  }
+
+  updateDefaultById({
+    prismaClientService,
+    id,
+    defaultData,
+  }: {
+    prismaClientService: PrismaClientService;
+    id: CustomFieldDefaultData['id'];
+    defaultData: any[];
+  }) {
+    const json = defaultData as Prisma.JsonArray;
+    return prismaClientService.customFieldDefaultData.update({
+      where: { id },
+      data: { content: json },
+    });
+  }
 }
