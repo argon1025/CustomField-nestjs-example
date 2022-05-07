@@ -15,6 +15,7 @@ export class CustomFieldRepository {
   create({
     prismaClientService,
     id,
+    name,
     store,
     origin,
     require,
@@ -24,6 +25,7 @@ export class CustomFieldRepository {
   }: {
     prismaClientService: PrismaClientService;
     id: CustomField['id'];
+    name: CustomField['name'];
     store: CustomField['store'];
     origin: Origin;
     require: CustomField['require'];
@@ -32,7 +34,7 @@ export class CustomFieldRepository {
     createdAt: CustomField['createdAt'];
   }) {
     return prismaClientService.customField.create({
-      data: { id, store, origin, require, fieldType, isArray, createdAt },
+      data: { id, name, store, origin, require, fieldType, isArray, createdAt },
     });
   }
 

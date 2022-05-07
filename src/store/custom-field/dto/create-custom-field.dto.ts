@@ -17,6 +17,9 @@ export class CreateCustomFieldRequestBodyDto {
   @IsEnum(Origin)
   origin: Origin;
 
+  @IsString()
+  name: CustomField['name'];
+
   @IsBoolean()
   require: CustomField['require'];
 

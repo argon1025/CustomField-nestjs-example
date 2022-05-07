@@ -33,6 +33,7 @@ export class CustomFieldService {
   ) {}
 
   async createCustomField({
+    name,
     origin,
     require,
     fieldType,
@@ -42,6 +43,7 @@ export class CustomFieldService {
     enumData,
     defaultData,
   }: {
+    name: CustomField['name'];
     origin: Origin;
     require: CustomField['require'];
     fieldType: FieldType;
@@ -101,6 +103,7 @@ export class CustomFieldService {
       const customFieldResult = await this.customFieldRepository.create({
         prismaClientService: prismaConnection,
         id: customFieldUuid,
+        name,
         store: storeId,
         origin,
         require,
