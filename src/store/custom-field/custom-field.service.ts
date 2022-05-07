@@ -17,7 +17,7 @@ import { PrismaService } from 'library/prisma/prisma.service';
 import { TimeService } from 'library/time/time.service';
 import { UuidService } from 'library/uuid/uuid.service';
 import { CustomFieldRepository } from 'src/store/custom-field/custom-field.repository';
-import { StoreRepository } from 'src/store/store.repository';
+import { StoreService } from 'src/store/store.service';
 
 import {
   DEFAULT_DATA_HAVE_ONLY_ONE_ITEM_MESSAGE,
@@ -28,10 +28,6 @@ import {
   NOT_FOUND_CUSTOM_FIELD_MESSAGE,
   NOT_OWNER_CUSTOM_FIELD_MESSAGE,
 } from 'src/store/custom-field/error-message/create-custom-field.error';
-import {
-  NOT_FOUND_STORE_MESSAGE,
-  YOUR_NOT_ADMIN_THIS_STORE_MESSAGE,
-} from 'src/store/error-message/store.error';
 
 @Injectable()
 export class CustomFieldService {
@@ -39,8 +35,8 @@ export class CustomFieldService {
     private readonly prismaService: PrismaService,
     private readonly uuidService: UuidService,
     private readonly timeService: TimeService,
-    private readonly storeRepository: StoreRepository,
     private readonly customFieldRepository: CustomFieldRepository,
+    private readonly storeService: StoreService,
   ) {}
 
   // NOTE: dataArray의 모든 아이템이 enumArray에 속한 아이템인지 확인합니다.
@@ -77,13 +73,7 @@ export class CustomFieldService {
     adminId: Admin['id'];
   }) {
     // NOTE: 스토어 유효성 검사
-    const store = await this.storeRepository.findFirstById({
-      prismaClientService: this.prismaService,
-      id: storeId,
-    });
-    if (!store) throw new NotFoundException(NOT_FOUND_STORE_MESSAGE);
-    if (store.admin !== adminId)
-      throw new BadRequestException(YOUR_NOT_ADMIN_THIS_STORE_MESSAGE);
+    await this.storeService.isStoreOwner({ adminId, storeId });
 
     // NOTE: EnumData 유효성 검사
     if (enumData) {
@@ -182,20 +172,13 @@ export class CustomFieldService {
     defaultData?: unknown[];
   }) {
     // NOTE: 스토어 유효성 검사
-    const store = await this.storeRepository.findFirstById({
-      prismaClientService: this.prismaService,
-      id: storeId,
-    });
-    if (!store) throw new NotFoundException(NOT_FOUND_STORE_MESSAGE);
-    if (store.admin !== adminId)
-      throw new BadRequestException(YOUR_NOT_ADMIN_THIS_STORE_MESSAGE);
+    await this.storeService.isStoreOwner({ adminId, storeId });
 
-    // NOTE: 커스텀필드 정보 로드
-    const customFieldData = await this.customFieldRepository.findFirstById({
-      prismaClientService: this.prismaService,
-      id,
+    // NOTE: 커스텀필드 정보 로드 및 인가 체크
+    const customFieldData = await this.isCustomFieldOwner({
+      storeId,
+      customFieldId: id,
     });
-    if (!customFieldData) throw new NotFoundException();
 
     // NOTE: 변경할 Enum 데이터가 존재할 경우
     if (enumData) {
@@ -269,23 +252,13 @@ export class CustomFieldService {
     storeId: Store['id'];
   }) {
     // NOTE: 스토어 정보 조회 및 인가 체크
-    const store = await this.storeRepository.findFirstById({
-      prismaClientService: this.prismaService,
-      id: storeId,
-    });
-    if (!store) throw new NotFoundException(NOT_FOUND_STORE_MESSAGE);
-    if (store.admin !== adminId)
-      throw new BadRequestException(YOUR_NOT_ADMIN_THIS_STORE_MESSAGE);
+    const store = await this.storeService.isStoreOwner({ adminId, storeId });
 
     // NOTE: 커스텀필드 정보 로드 및 인가 체크
-    const customFieldData = await this.customFieldRepository.findFirstById({
-      prismaClientService: this.prismaService,
-      id,
+    await this.isCustomFieldOwner({
+      storeId: store.id,
+      customFieldId: id,
     });
-    if (!customFieldData)
-      throw new NotFoundException(NOT_FOUND_CUSTOM_FIELD_MESSAGE);
-    if (customFieldData.store !== store.id)
-      throw new BadRequestException(NOT_OWNER_CUSTOM_FIELD_MESSAGE);
 
     // NOTE: 삭제
     const now = this.timeService.now();
@@ -298,5 +271,25 @@ export class CustomFieldService {
     } catch (error) {
       throw new InternalServerErrorException();
     }
+  }
+
+  // NOTE: 커스텀필드가 존재하는지, 해당 커스텀필드의 오너인지 확인합니다
+  async isCustomFieldOwner({
+    storeId,
+    customFieldId,
+  }: {
+    storeId: Store['id'];
+    customFieldId: CustomField['id'];
+  }) {
+    const customFieldData = await this.customFieldRepository.findFirstById({
+      prismaClientService: this.prismaService,
+      id: customFieldId,
+    });
+    if (!customFieldData)
+      throw new NotFoundException(NOT_FOUND_CUSTOM_FIELD_MESSAGE);
+    if (customFieldData.store !== storeId)
+      throw new BadRequestException(NOT_OWNER_CUSTOM_FIELD_MESSAGE);
+
+    return customFieldData;
   }
 }
