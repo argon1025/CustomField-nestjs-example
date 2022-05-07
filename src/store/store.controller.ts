@@ -6,6 +6,7 @@ import { CustomFieldService } from 'src/store/custom-field/custom-field.service'
 import {
   CreateCustomField,
   CreateStore,
+  DeleteCustomField,
   GetCustomField,
   PatchCustomField,
 } from 'src/store/store.decorator';
@@ -16,6 +17,7 @@ import {
   CreateCustomFieldRequestBodyDto,
   CreateCustomFieldRequestQueryDto,
 } from 'src/store/custom-field/dto/create-custom-field.dto';
+import { DeleteCustomFieldRequestParamDto } from 'src/store/custom-field/dto/delete-custom-field.dto';
 import {
   GetCustomFieldItem,
   GetCustomFieldRequestParamDto,
@@ -105,6 +107,19 @@ export class StoreController {
   ) {
     await this.customFieldService.patchCustomField({
       ...patchCustomFieldRequestBodyDto,
+      adminId: id,
+      storeId,
+    });
+    return null;
+  }
+
+  @DeleteCustomField()
+  async deleteCustomField(
+    @AdminTokenData() { id }: AdminJwtTokenPayload,
+    @Param() { storeId, customFieldId }: DeleteCustomFieldRequestParamDto,
+  ) {
+    await this.customFieldService.softDeleteCustomField({
+      id: customFieldId,
       adminId: id,
       storeId,
     });

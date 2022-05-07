@@ -33,3 +33,13 @@ export const NEW_ENUM_MUST_CONTAINED_PREVIOUS_MESSAGE: ExceptionMessageInterface
     [CountryCode.KR]: '이전에 정의한 Enum 데이터가 모두 포함되어야합니다.',
     [CountryCode.EN]: 'new enum data must be contained pervious data',
   };
+
+export const NOT_FOUND_CUSTOM_FIELD_MESSAGE: ExceptionMessageInterface = {
+  [CountryCode.KR]: '존재하지않는 커스텀필드 입니다.',
+  [CountryCode.EN]: 'Not found customField',
+};
+
+export const NOT_OWNER_CUSTOM_FIELD_MESSAGE: ExceptionMessageInterface = {
+  [CountryCode.KR]: '해당 스토어에서 관리하는 커스텀필드가 아닙니다',
+  [CountryCode.EN]: 'this custom Field was not in this store',
+};

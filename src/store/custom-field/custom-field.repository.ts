@@ -155,4 +155,19 @@ export class CustomFieldRepository {
       data: { content: json },
     });
   }
+
+  softDeleteById({
+    prismaClientService,
+    id,
+    deletedAt,
+  }: {
+    prismaClientService: PrismaClientService;
+    id: CustomField['id'];
+    deletedAt: CustomField['deletedAt'];
+  }) {
+    return prismaClientService.customField.update({
+      where: { id },
+      data: { deletedAt },
+    });
+  }
 }

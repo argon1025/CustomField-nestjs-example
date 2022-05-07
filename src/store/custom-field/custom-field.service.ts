@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import {
@@ -24,6 +25,8 @@ import {
   DEFAULT_DATA_NOT_AVAILABLE_TYPE_MESSAGE,
   NEW_ENUM_MUST_CONTAINED_PREVIOUS_MESSAGE,
   NOT_AVAILABLE_TYPE_ENUM_MESSAGE,
+  NOT_FOUND_CUSTOM_FIELD_MESSAGE,
+  NOT_OWNER_CUSTOM_FIELD_MESSAGE,
 } from 'src/store/custom-field/error-message/create-custom-field.error';
 import {
   NOT_FOUND_STORE_MESSAGE,
@@ -261,5 +264,46 @@ export class CustomFieldService {
         });
       }
     });
+  }
+
+  async softDeleteCustomField({
+    id,
+    adminId,
+    storeId,
+  }: {
+    id: CustomField['id'];
+    adminId: Admin['id'];
+    storeId: Store['id'];
+  }) {
+    // NOTE: 스토어 정보 조회 및 인가 체크
+    const store = await this.storeRepository.findFirstById({
+      prismaClientService: this.prismaService,
+      id: storeId,
+    });
+    if (!store) throw new NotFoundException(NOT_FOUND_STORE_MESSAGE);
+    if (store.admin !== adminId)
+      throw new BadRequestException(YOUR_NOT_ADMIN_THIS_STORE_MESSAGE);
+
+    // NOTE: 커스텀필드 정보 로드 및 인가 체크
+    const customFieldData = await this.customFieldRepository.findFirstById({
+      prismaClientService: this.prismaService,
+      id,
+    });
+    if (!customFieldData)
+      throw new NotFoundException(NOT_FOUND_CUSTOM_FIELD_MESSAGE);
+    if (customFieldData.store !== store.id)
+      throw new BadRequestException(NOT_OWNER_CUSTOM_FIELD_MESSAGE);
+
+    // NOTE: 삭제
+    const now = this.timeService.now();
+    try {
+      await this.customFieldRepository.softDeleteById({
+        prismaClientService: this.prismaService,
+        id,
+        deletedAt: now,
+      });
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
   }
 }

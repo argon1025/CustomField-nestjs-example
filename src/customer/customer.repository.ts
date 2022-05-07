@@ -43,10 +43,12 @@ export class CustomerRepository {
     id: Customer['id'];
   }) {
     return prismaClientService.customer.findFirst({
-      where: { id },
+      where: {
+        id,
+      },
       include: {
         CustomerCustomFields: {
-          where: { deletedAt: null },
+          where: { deletedAt: null, CustomField: { deletedAt: null } },
           include: { CustomField: true },
         },
       },
