@@ -1,4 +1,4 @@
-import { applyDecorators, Get, Post } from '@nestjs/common';
+import { applyDecorators, Get, Patch, Post } from '@nestjs/common';
 import { ApiOkResponse } from '@nestjs/swagger';
 
 import { AdminTokenGuard } from 'library/passport/guard/admin-token.guard';
@@ -30,4 +30,14 @@ export const GetCustomField = () =>
       description: '커스텀 옵션 조회 성공',
       type: GetCustomFieldResponseDto,
     }),
+  );
+
+export const PatchCustomField = () =>
+  applyDecorators(
+    Patch(':storeId/custom-field'),
+    ApiOkResponse({
+      description: '커스텀 옵션 업데이트 성공',
+      type: undefined,
+    }),
+    AdminTokenGuard(),
   );
