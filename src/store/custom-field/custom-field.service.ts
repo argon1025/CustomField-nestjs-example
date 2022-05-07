@@ -3,7 +3,14 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Admin, CustomField, FieldType, Origin, Store } from '@prisma/client';
+import {
+  Admin,
+  CustomField,
+  FieldType,
+  Origin,
+  Prisma,
+  Store,
+} from '@prisma/client';
 
 import { PrismaService } from 'library/prisma/prisma.service';
 import { TimeService } from 'library/time/time.service';
@@ -15,6 +22,7 @@ import {
   DEFAULT_DATA_HAVE_ONLY_ONE_ITEM_MESSAGE,
   DEFAULT_DATA_MUST_CONTAINED_ENUM_MESSAGE,
   DEFAULT_DATA_NOT_AVAILABLE_TYPE_MESSAGE,
+  NEW_ENUM_MUST_CONTAINED_PREVIOUS_MESSAGE,
   NOT_AVAILABLE_TYPE_ENUM_MESSAGE,
 } from 'src/store/custom-field/error-message/create-custom-field.error';
 import {
@@ -31,6 +39,18 @@ export class CustomFieldService {
     private readonly storeRepository: StoreRepository,
     private readonly customFieldRepository: CustomFieldRepository,
   ) {}
+
+  // NOTE: dataArray의 모든 아이템이 enumArray에 속한 아이템인지 확인합니다.
+  private hasIncludeEnumType(enumArray: any[], compareArray: any[]) {
+    return compareArray.every((val) => enumArray.includes(val));
+  }
+
+  // NOTE: dataArray의 모든아이템 타입이 typeName인지 확인합니다.
+  private isAvailableDataType(typeName: string, compareArray: any[]) {
+    return compareArray.every(
+      (val) => typeof val === `${typeName.toLowerCase()}`,
+    );
+  }
 
   async createCustomField({
     name,
@@ -147,6 +167,99 @@ export class CustomFieldService {
       prismaClientService: this.prismaService,
       storeId,
       origin,
+    });
+  }
+
+  async patchCustomField({
+    id,
+    adminId,
+    storeId,
+    name,
+    enumData,
+    defaultData,
+  }: {
+    id: CustomField['id'];
+    adminId: Admin['id'];
+    storeId: Store['id'];
+    name?: CustomField['name'];
+    enumData?: unknown[];
+    defaultData?: unknown[];
+  }) {
+    // NOTE: 스토어 유효성 검사
+    const store = await this.storeRepository.findFirstById({
+      prismaClientService: this.prismaService,
+      id: storeId,
+    });
+    if (!store) throw new NotFoundException(NOT_FOUND_STORE_MESSAGE);
+    if (store.admin !== adminId)
+      throw new BadRequestException(YOUR_NOT_ADMIN_THIS_STORE_MESSAGE);
+
+    // NOTE: 커스텀필드 정보 로드
+    const customFieldData = await this.customFieldRepository.findFirstById({
+      prismaClientService: this.prismaService,
+      id,
+    });
+    if (!customFieldData) throw new NotFoundException();
+
+    // NOTE: 변경할 Enum 데이터가 존재할 경우
+    if (enumData) {
+      // 타입 유효성 검사
+      if (!this.isAvailableDataType(customFieldData.fieldType, enumData))
+        throw new BadRequestException(NOT_AVAILABLE_TYPE_ENUM_MESSAGE);
+
+      // 기존에 정의된 Enum 데이터가 모두 포함되었는가?
+      const previousEnumData = customFieldData.isEnum
+        .content as Prisma.JsonArray;
+      if (!this.hasIncludeEnumType(enumData, previousEnumData))
+        throw new BadRequestException(NEW_ENUM_MUST_CONTAINED_PREVIOUS_MESSAGE);
+    }
+
+    // NOTE: 변경할 default 데이터가 존재할 경우
+    if (defaultData) {
+      // 타입 유효성 검사
+      if (!this.isAvailableDataType(customFieldData.fieldType, defaultData))
+        throw new BadRequestException(DEFAULT_DATA_NOT_AVAILABLE_TYPE_MESSAGE);
+
+      // 배열 가능여부 검사
+      if (defaultData.length > 1) {
+        if (!customFieldData.isArray)
+          throw new BadRequestException(
+            DEFAULT_DATA_HAVE_ONLY_ONE_ITEM_MESSAGE,
+          );
+      }
+
+      // enum 충족여부 검사
+      if (enumData) {
+        if (!this.hasIncludeEnumType(enumData, defaultData))
+          throw new BadRequestException(
+            DEFAULT_DATA_MUST_CONTAINED_ENUM_MESSAGE,
+          );
+      }
+    }
+
+    // NOTE: 데이터 업데이트
+    await this.prismaService.$transaction(async (prismaConnection) => {
+      await this.customFieldRepository.updateById({
+        prismaClientService: prismaConnection,
+        id,
+        name,
+      });
+
+      if (enumData) {
+        await this.customFieldRepository.updateEnumById({
+          prismaClientService: prismaConnection,
+          id: customFieldData.isEnum.id,
+          enumData,
+        });
+      }
+
+      if (defaultData) {
+        await this.customFieldRepository.updateDefaultById({
+          prismaClientService: prismaConnection,
+          id: customFieldData.isDefault.id,
+          defaultData,
+        });
+      }
     });
   }
 }
