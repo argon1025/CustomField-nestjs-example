@@ -88,10 +88,7 @@ export class CustomFieldService {
     // NOTE: EnumData 유효성 검사
     if (enumData) {
       // 타입이 정확한지
-      const isAvailableEnumDataType = enumData.every(
-        (val) => typeof val === `${fieldType.toLowerCase()}`,
-      );
-      if (!isAvailableEnumDataType)
+      if (!this.isAvailableDataType(fieldType, enumData))
         throw new BadRequestException(NOT_AVAILABLE_TYPE_ENUM_MESSAGE);
     }
 
@@ -103,16 +100,12 @@ export class CustomFieldService {
             DEFAULT_DATA_HAVE_ONLY_ONE_ITEM_MESSAGE,
           );
       }
-      const isAvailableDefaultDataType = defaultData.every(
-        (val) => typeof val === `${fieldType.toLowerCase()}`,
-      );
-      if (!isAvailableDefaultDataType)
+
+      if (!this.isAvailableDataType(fieldType, defaultData))
         throw new BadRequestException(DEFAULT_DATA_NOT_AVAILABLE_TYPE_MESSAGE);
+
       if (enumData) {
-        const hasIncludeEnumData = defaultData.every((val) =>
-          enumData.includes(val),
-        );
-        if (!hasIncludeEnumData)
+        if (!this.hasIncludeEnumType(enumData, defaultData))
           throw new BadRequestException(
             DEFAULT_DATA_MUST_CONTAINED_ENUM_MESSAGE,
           );
