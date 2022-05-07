@@ -17,6 +17,10 @@ export class GetCustomFieldRequestQueryDto {
 }
 
 export class GetCustomFieldItem {
+  id: CustomField['id'];
+
+  name: CustomField['name'];
+
   @ApiProperty({ enum: Origin })
   origin: Origin;
 

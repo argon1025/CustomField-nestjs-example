@@ -72,6 +72,8 @@ export class StoreController {
       })
     ).map((val): GetCustomFieldItem => {
       return {
+        id: val.id,
+        name: val.name,
         origin: val.origin,
         require: val.require,
         fieldType: val.fieldType,
