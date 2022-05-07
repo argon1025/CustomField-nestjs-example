@@ -1,13 +1,15 @@
 import { Customer } from '@prisma/client';
 
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, Length } from 'class-validator';
 
 export class LoginCustomerRequestBodyDto {
   @IsEmail()
   @IsNotEmpty()
-  email: Customer['email'];
+  @Length(1, 30)
+  readonly email: Customer['email'];
 
   @IsString()
   @IsNotEmpty()
-  password: Customer['password'];
+  @Length(1, 30)
+  readonly password: Customer['password'];
 }

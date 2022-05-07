@@ -69,6 +69,7 @@ export class CustomerController {
       name,
       email,
       customField: CustomerCustomFields.map((val) => ({
+        name: val.CustomField.name,
         customFieldId: val.customField,
         content: val.content as Prisma.JsonArray,
       })),

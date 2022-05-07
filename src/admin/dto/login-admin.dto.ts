@@ -6,10 +6,10 @@ export class LoginAdminRequestBodyDto {
   @IsEmail()
   @IsNotEmpty()
   @Length(1, 30)
-  email: Admin['email'];
+  readonly email: Admin['email'];
 
   @IsString()
   @IsNotEmpty()
   @Length(7, 30)
-  password: Admin['password'];
+  readonly password: Admin['password'];
 }

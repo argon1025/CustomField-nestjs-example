@@ -1,11 +1,11 @@
 import { Admin } from '@prisma/client';
 
 export class GetMeAdminResponseDto {
-  name: Admin['name'];
+  readonly name: Admin['name'];
 
-  email: Admin['email'];
+  readonly email: Admin['email'];
 
-  createdAt: Admin['createdAt'];
+  readonly createdAt: Admin['createdAt'];
 
   constructor(required: Required<GetMeAdminResponseDto>) {
     Object.assign(this, required);

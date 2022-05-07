@@ -18,6 +18,6 @@ import { StoreRepository } from 'src/store/store.repository';
     CustomFieldRepository,
   ],
   controllers: [StoreController],
-  exports: [StoreRepository, CustomFieldRepository],
+  exports: [StoreRepository, CustomFieldRepository, StoreService],
 })
 export class StoreModule {}

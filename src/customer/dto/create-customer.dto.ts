@@ -2,41 +2,49 @@ import { Customer, CustomField } from '@prisma/client';
 
 import { Type } from 'class-transformer';
 import {
+  ArrayMaxSize,
   ArrayNotEmpty,
   IsArray,
   IsEmail,
   IsNotEmpty,
   IsOptional,
   IsString,
+  Length,
   ValidateNested,
 } from 'class-validator';
 
 export class CreateCustomerCustomDataItemDto {
   @IsString()
   @IsNotEmpty()
-  customFieldID: CustomField['id'];
+  @Length(1, 30)
+  readonly customFieldID: CustomField['id'];
 
   @IsArray()
   @ArrayNotEmpty()
-  content: any[];
+  @ArrayMaxSize(30)
+  readonly content: any[];
 }
 
 export class CreateCustomerRequestBodyDto {
   @IsString()
-  store: Customer['store'];
+  @Length(1, 30)
+  readonly store: Customer['store'];
 
   @IsString()
-  name: Customer['name'];
+  @Length(1, 30)
+  readonly name: Customer['name'];
 
   @IsEmail()
-  email: Customer['email'];
+  @Length(1, 30)
+  readonly email: Customer['email'];
 
   @IsString()
-  password: Customer['password'];
+  @Length(7, 30)
+  readonly password: Customer['password'];
 
   @IsOptional()
   @ArrayNotEmpty()
   @Type(() => CreateCustomerCustomDataItemDto)
   @ValidateNested({ each: true })
-  customData?: CreateCustomerCustomDataItemDto[];
+  readonly customData?: CreateCustomerCustomDataItemDto[];
 }

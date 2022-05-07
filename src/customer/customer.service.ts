@@ -15,7 +15,7 @@ import { CustomerCustomFieldRepository } from 'src/customer/custom-field/custome
 import { CustomerCustomFieldService } from 'src/customer/custom-field/customer-custom-field.service';
 import { CustomerRepository } from 'src/customer/customer.repository';
 import { CustomFieldRepository } from 'src/store/custom-field/custom-field.repository';
-import { StoreRepository } from 'src/store/store.repository';
+import { StoreService } from 'src/store/store.service';
 
 import {
   NEED_REQUIRE_DATA_MESSAGE,
@@ -30,19 +30,18 @@ import {
   CUSTOMER_NOT_FOUND_MESSAGE,
   NOT_MATCH_CUSTOMER_PASSWORD_MESSAGE,
 } from 'src/customer/error-message/customer.error';
-import { NOT_FOUND_STORE_MESSAGE } from 'src/store/error-message/store.error';
 
 @Injectable()
 export class CustomerService {
   constructor(
     private readonly prismaService: PrismaService,
-    private readonly storeRepository: StoreRepository,
     private readonly customFieldRepository: CustomFieldRepository,
     private readonly customerCustomFieldService: CustomerCustomFieldService,
     private readonly customerRepository: CustomerRepository,
     private readonly uuidService: UuidService,
     private readonly cryptoService: CryptoService,
     private readonly customerCustomFieldRepository: CustomerCustomFieldRepository,
+    private readonly storeService: StoreService,
   ) {}
 
   async validateCustomer({
@@ -84,11 +83,7 @@ export class CustomerService {
     customData?: CreateCustomerCustomDataItemDto[];
   }) {
     // NOTE: 스토어 유효성 검사
-    const storeResult = await this.storeRepository.findFirstById({
-      prismaClientService: this.prismaService,
-      id: store,
-    });
-    if (!storeResult) throw new NotFoundException(NOT_FOUND_STORE_MESSAGE);
+    await this.storeService.isExist({ storeId: store });
 
     // NOTE: 스토어 커스터머 커스텀필드 정의여부 조회
     const storeCustomField =
@@ -97,6 +92,7 @@ export class CustomerService {
         origin: Origin.Customer,
         storeId: store,
       });
+    console.log(storeCustomField);
 
     // NOTE: 스토어 가입시 요구하는 customData가 있을경우에 진행
     if (storeCustomField.length > 0) {
