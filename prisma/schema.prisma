@@ -139,6 +139,7 @@ model OrdersOnProducts {
 // store >------ Store.id
 model CustomField {
   id        String                  @id
+  name      String?
   store     String
   origin    Origin
   require   Boolean
