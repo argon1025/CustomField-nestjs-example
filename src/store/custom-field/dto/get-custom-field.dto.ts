@@ -2,11 +2,12 @@ import { ApiProperty } from '@nestjs/swagger';
 import { CustomField, FieldType, Origin, Store } from '@prisma/client';
 
 import { Type } from 'class-transformer';
-import { IsEnum, IsString } from 'class-validator';
+import { IsEnum, IsString, Length } from 'class-validator';
 
 export class GetCustomFieldRequestParamDto {
   @Type(() => String)
   @IsString()
+  @Length(1, 30)
   readonly storeId: Store['id'];
 }
 

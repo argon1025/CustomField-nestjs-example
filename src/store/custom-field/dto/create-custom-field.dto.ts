@@ -3,6 +3,7 @@ import { CustomField, FieldType, Origin, Store } from '@prisma/client';
 
 import { Type } from 'class-transformer';
 import {
+  ArrayMaxSize,
   ArrayNotEmpty,
   ArrayUnique,
   IsArray,
@@ -10,6 +11,7 @@ import {
   IsEnum,
   IsOptional,
   IsString,
+  Length,
 } from 'class-validator';
 
 export class CreateCustomFieldRequestBodyDto {
@@ -18,6 +20,7 @@ export class CreateCustomFieldRequestBodyDto {
   readonly origin: Origin;
 
   @IsString()
+  @Length(1, 30)
   readonly name: CustomField['name'];
 
   @IsBoolean()
@@ -34,11 +37,13 @@ export class CreateCustomFieldRequestBodyDto {
   @IsArray()
   @ArrayUnique()
   @ArrayNotEmpty()
+  @ArrayMaxSize(30)
   readonly enumData?: any[];
 
   @IsOptional()
   @IsArray()
   @ArrayNotEmpty()
+  @ArrayMaxSize(30)
   readonly defaultData?: any[];
 }
 
