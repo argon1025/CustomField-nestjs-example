@@ -59,7 +59,7 @@ export class StoreController {
     @Param() { storeId }: CreateCustomFieldRequestQueryDto,
     @Body() createCustomFieldRequestBodyDto: CreateCustomFieldRequestBodyDto,
   ) {
-    await this.customFieldService.createCustomField({
+    await this.storeService.createCustomField({
       ...createCustomFieldRequestBodyDto,
       adminId: id,
       storeId,
@@ -105,7 +105,7 @@ export class StoreController {
     @Param() { storeId }: PatchCustomFieldRequestParamDto,
     @Body() patchCustomFieldRequestBodyDto: PatchCustomFieldRequestBodyDto,
   ) {
-    await this.customFieldService.patchCustomField({
+    await this.storeService.patchCustomField({
       ...patchCustomFieldRequestBodyDto,
       adminId: id,
       storeId,
@@ -118,7 +118,7 @@ export class StoreController {
     @AdminTokenData() { id }: AdminJwtTokenPayload,
     @Param() { storeId, customFieldId }: DeleteCustomFieldRequestParamDto,
   ) {
-    await this.customFieldService.softDeleteCustomField({
+    await this.storeService.softDeleteCustomField({
       id: customFieldId,
       adminId: id,
       storeId,

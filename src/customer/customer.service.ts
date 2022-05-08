@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   ForbiddenException,
   Injectable,
   InternalServerErrorException,
@@ -17,12 +16,6 @@ import { CustomerRepository } from 'src/customer/customer.repository';
 import { CustomFieldRepository } from 'src/store/custom-field/custom-field.repository';
 import { StoreService } from 'src/store/store.service';
 
-import {
-  NEED_REQUIRE_DATA_MESSAGE,
-  NOT_AVAILABLE_ARRAY_MESSAGE,
-  NOT_AVAILABLE_ENUM_MESSAGE,
-  NOT_AVAILABLE_TYPE_MESSAGE,
-} from 'src/customer/custom-field/error-message/customer-custom-filed.error';
 import { CreateCustomerCustomDataItemDto } from 'src/customer/dto/create-customer.dto';
 import {
   CUSTOMER_ALREADY_JOIN_MESSAGE,
@@ -92,46 +85,12 @@ export class CustomerService {
         origin: Origin.Customer,
         storeId: store,
       });
-    console.log(storeCustomField);
 
-    // NOTE: 스토어 가입시 요구하는 customData가 있을경우에 진행
-    if (storeCustomField.length > 0) {
-      // NOTE: 데이터 존재여부 검증
-      const hasAllRequireData =
-        this.customerCustomFieldService.hasAllRequireData({
-          storeCustomField,
-          customData,
-        });
-      if (!hasAllRequireData)
-        throw new BadRequestException(NEED_REQUIRE_DATA_MESSAGE);
-
-      // NOTE: 배열 소유가능여부 검증
-      const hasArrayAvailable =
-        this.customerCustomFieldService.hasArrayAvailable({
-          storeCustomField,
-          customData,
-        });
-      if (!hasArrayAvailable)
-        throw new BadRequestException(NOT_AVAILABLE_ARRAY_MESSAGE);
-
-      // NOTE: 타입 검증
-      const hasAvailableType =
-        this.customerCustomFieldService.hasSatisfyConditionType({
-          storeCustomField,
-          customData,
-        });
-      if (!hasAvailableType)
-        throw new BadRequestException(NOT_AVAILABLE_TYPE_MESSAGE);
-
-      // NOTE: Enum 검증
-      const hasAvailableEnumType =
-        this.customerCustomFieldService.hasAvailableEnumType({
-          storeCustomField,
-          customData,
-        });
-      if (!hasAvailableEnumType)
-        throw new BadRequestException(NOT_AVAILABLE_ENUM_MESSAGE);
-    }
+    // NOTE: 커스텀필드 데이터 검증
+    this.customerCustomFieldService.createCustomerValidation({
+      storeCustomField,
+      customData,
+    });
 
     // NOTE: 가입 여부 조회
     const hasJoined = await this.customerRepository.findFirstByEmail({
