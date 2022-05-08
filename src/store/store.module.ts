@@ -5,6 +5,7 @@ import { StoreService } from './store.service';
 import { PrismaModule } from 'library/prisma/prisma.module';
 import { TimeModule } from 'library/time/time.module';
 import { UuidModule } from 'library/uuid/uuid.module';
+import { CustomFieldValidationService } from 'src/store/custom-field/custom-field-validation.service';
 import { CustomFieldRepository } from 'src/store/custom-field/custom-field.repository';
 import { CustomFieldService } from 'src/store/custom-field/custom-field.service';
 import { StoreRepository } from 'src/store/store.repository';
@@ -16,8 +17,14 @@ import { StoreRepository } from 'src/store/store.repository';
     StoreRepository,
     CustomFieldService,
     CustomFieldRepository,
+    CustomFieldValidationService,
   ],
   controllers: [StoreController],
-  exports: [StoreRepository, CustomFieldRepository, StoreService],
+  exports: [
+    StoreRepository,
+    CustomFieldRepository,
+    StoreService,
+    CustomFieldValidationService,
+  ],
 })
 export class StoreModule {}
