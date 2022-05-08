@@ -208,6 +208,7 @@ model CustomerCustomField {
 
   Customer    Customer    @relation(fields: [customer], references: [id])
   CustomField CustomField @relation(fields: [customField], references: [id])
+  @@unique([customer, customField])
 }
 
 // NOTE: Product 커스텀필드 저장 테이블
