@@ -54,4 +54,19 @@ export class CustomerRepository {
       },
     });
   }
+
+  updateById({
+    prismaClientService,
+    name,
+    customerId,
+  }: {
+    prismaClientService: PrismaClientService;
+    name: Customer['name'];
+    customerId: Customer['id'];
+  }) {
+    return prismaClientService.customer.update({
+      where: { id: customerId },
+      data: { name },
+    });
+  }
 }
