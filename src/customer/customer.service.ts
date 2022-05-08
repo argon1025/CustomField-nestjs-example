@@ -85,7 +85,6 @@ export class CustomerService {
         origin: Origin.Customer,
         storeId: store,
       });
-    console.log(storeCustomField);
 
     // NOTE: 커스텀필드 데이터 검증
     this.customerCustomFieldService.createCustomerValidation({
