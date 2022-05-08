@@ -1,24 +1,13 @@
 import {
   BadRequestException,
   Injectable,
-  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import {
-  Admin,
-  CustomField,
-  FieldType,
-  Origin,
-  Prisma,
-  Store,
-} from '@prisma/client';
+import { CustomField, FieldType, Origin, Prisma, Store } from '@prisma/client';
 
 import { PrismaService } from 'library/prisma/prisma.service';
-import { TimeService } from 'library/time/time.service';
-import { UuidService } from 'library/uuid/uuid.service';
 import { CustomFieldValidationService } from 'src/store/custom-field/custom-field-validation.service';
 import { CustomFieldRepository } from 'src/store/custom-field/custom-field.repository';
-import { StoreService } from 'src/store/store.service';
 
 import {
   DEFAULT_DATA_HAVE_ONLY_ONE_ITEM_MESSAGE,
@@ -29,42 +18,28 @@ import {
   NOT_FOUND_CUSTOM_FIELD_MESSAGE,
   NOT_OWNER_CUSTOM_FIELD_MESSAGE,
 } from 'src/store/custom-field/error-message/create-custom-field.error';
+import { CustomFieldInfoItem } from 'src/store/custom-field/type/custom-field-validation.type';
 
 @Injectable()
 export class CustomFieldService {
   constructor(
     private readonly prismaService: PrismaService,
-    private readonly uuidService: UuidService,
-    private readonly timeService: TimeService,
     private readonly customFieldRepository: CustomFieldRepository,
-    private readonly storeService: StoreService,
     private readonly customFieldValidationService: CustomFieldValidationService,
   ) {}
 
-  async createCustomField({
-    name,
-    origin,
-    require,
+  createCustomFieldValidation({
     fieldType,
     isArray,
-    storeId,
-    adminId,
+
     enumData,
     defaultData,
   }: {
-    name: CustomField['name'];
-    origin: Origin;
-    require: CustomField['require'];
     fieldType: FieldType;
     isArray: CustomField['isArray'];
     enumData?: unknown[];
     defaultData?: unknown[];
-    storeId: Store['id'];
-    adminId: Admin['id'];
   }) {
-    // NOTE: 스토어 유효성 검사
-    await this.storeService.isStoreOwner({ adminId, storeId });
-
     // NOTE: EnumData 유효성 검사
     if (enumData) {
       // 타입이 정확한지
@@ -106,45 +81,6 @@ export class CustomFieldService {
           );
       }
     }
-
-    // NOTE: 데이터 기록
-    await this.prismaService.$transaction(async (prismaConnection) => {
-      const now = this.timeService.now();
-      const customFieldUuid = this.uuidService.generate();
-      const customFieldResult = await this.customFieldRepository.create({
-        prismaClientService: prismaConnection,
-        id: customFieldUuid,
-        name,
-        store: storeId,
-        origin,
-        require,
-        fieldType,
-        isArray,
-        createdAt: now,
-      });
-
-      if (enumData) {
-        const enumUuid = this.uuidService.generate();
-        await this.customFieldRepository.createEnum({
-          prismaClientService: prismaConnection,
-          id: enumUuid,
-          customField: customFieldResult.id,
-          enumData,
-          createdAt: now,
-        });
-      }
-
-      if (defaultData) {
-        const defaultUuid = this.uuidService.generate();
-        await this.customFieldRepository.createDefault({
-          prismaClientService: prismaConnection,
-          id: defaultUuid,
-          customField: customFieldResult.id,
-          defaultData,
-          createdAt: now,
-        });
-      }
-    });
   }
 
   getCustomField({
@@ -161,30 +97,15 @@ export class CustomFieldService {
     });
   }
 
-  async patchCustomField({
-    id,
-    adminId,
-    storeId,
-    name,
+  async patchCustomFieldValidation({
     enumData,
     defaultData,
+    customFieldData,
   }: {
-    id: CustomField['id'];
-    adminId: Admin['id'];
-    storeId: Store['id'];
-    name?: CustomField['name'];
     enumData?: unknown[];
     defaultData?: unknown[];
+    customFieldData: CustomFieldInfoItem;
   }) {
-    // NOTE: 스토어 유효성 검사
-    await this.storeService.isStoreOwner({ adminId, storeId });
-
-    // NOTE: 커스텀필드 정보 로드 및 인가 체크
-    const customFieldData = await this.isCustomFieldOwner({
-      storeId,
-      customFieldId: id,
-    });
-
     // NOTE: 변경할 Enum 데이터가 존재할 경우
     if (enumData) {
       // 타입 유효성 검사
@@ -239,62 +160,6 @@ export class CustomFieldService {
             DEFAULT_DATA_MUST_CONTAINED_ENUM_MESSAGE,
           );
       }
-    }
-
-    // NOTE: 데이터 업데이트
-    await this.prismaService.$transaction(async (prismaConnection) => {
-      await this.customFieldRepository.updateById({
-        prismaClientService: prismaConnection,
-        id,
-        name,
-      });
-
-      if (enumData) {
-        await this.customFieldRepository.updateEnumById({
-          prismaClientService: prismaConnection,
-          id: customFieldData.isEnum.id,
-          enumData,
-        });
-      }
-
-      if (defaultData) {
-        await this.customFieldRepository.updateDefaultById({
-          prismaClientService: prismaConnection,
-          id: customFieldData.isDefault.id,
-          defaultData,
-        });
-      }
-    });
-  }
-
-  async softDeleteCustomField({
-    id,
-    adminId,
-    storeId,
-  }: {
-    id: CustomField['id'];
-    adminId: Admin['id'];
-    storeId: Store['id'];
-  }) {
-    // NOTE: 스토어 정보 조회 및 인가 체크
-    const store = await this.storeService.isStoreOwner({ adminId, storeId });
-
-    // NOTE: 커스텀필드 정보 로드 및 인가 체크
-    await this.isCustomFieldOwner({
-      storeId: store.id,
-      customFieldId: id,
-    });
-
-    // NOTE: 삭제
-    const now = this.timeService.now();
-    try {
-      await this.customFieldRepository.softDeleteById({
-        prismaClientService: this.prismaService,
-        id,
-        deletedAt: now,
-      });
-    } catch (error) {
-      throw new InternalServerErrorException();
     }
   }
 
