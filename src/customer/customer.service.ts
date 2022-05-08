@@ -78,13 +78,14 @@ export class CustomerService {
     // NOTE: 스토어 유효성 검사
     await this.storeService.isExist({ storeId: store });
 
-    // NOTE: 스토어 커스터머 커스텀필드 정의여부 조회
-    const storeCustomField =
+    // NOTE: 스토어 커스텀필드 로드, 관리자전용 제외
+    const storeCustomField = (
       await this.customFieldRepository.findManyByIdAndOrigin({
         prismaClientService: this.prismaService,
         origin: Origin.Customer,
         storeId: store,
-      });
+      })
+    ).filter((val) => val.onlyAdmin === false);
 
     // NOTE: 커스텀필드 데이터 검증
     this.customerCustomFieldService.createCustomerValidation({
