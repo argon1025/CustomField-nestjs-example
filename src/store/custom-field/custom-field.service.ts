@@ -5,10 +5,11 @@ import {
 } from '@nestjs/common';
 import { CustomField, FieldType, Origin, Prisma, Store } from '@prisma/client';
 
+import { CustomFieldValidationService } from 'library/custom-field-validation/custom-field-validation.service';
 import { PrismaService } from 'library/prisma/prisma.service';
-import { CustomFieldValidationService } from 'src/store/custom-field/custom-field-validation.service';
 import { CustomFieldRepository } from 'src/store/custom-field/custom-field.repository';
 
+import { CustomFieldInfoItem } from 'library/custom-field-validation/type/custom-field-validation.type';
 import {
   DEFAULT_DATA_HAVE_ONLY_ONE_ITEM_MESSAGE,
   DEFAULT_DATA_MUST_CONTAINED_ENUM_MESSAGE,
@@ -18,7 +19,6 @@ import {
   NOT_FOUND_CUSTOM_FIELD_MESSAGE,
   NOT_OWNER_CUSTOM_FIELD_MESSAGE,
 } from 'src/store/custom-field/error-message/create-custom-field.error';
-import { CustomFieldInfoItem } from 'src/store/custom-field/type/custom-field-validation.type';
 
 @Injectable()
 export class CustomFieldService {

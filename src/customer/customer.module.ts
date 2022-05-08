@@ -4,6 +4,7 @@ import { CustomerController } from './customer.controller';
 import { CustomerService } from './customer.service';
 import { CookieModule } from 'library/cookie/cookie.module';
 import { CryptoModule } from 'library/crypto/crypto.module';
+import { CustomFieldValidationModule } from 'library/custom-field-validation/custom-field-validation.module';
 import { TokenModule } from 'library/jwt/token.module';
 import { CustomerTokenStrategy } from 'library/passport/strategy/customer-token.strategy';
 import { PrismaModule } from 'library/prisma/prisma.module';
@@ -23,6 +24,7 @@ import { StoreModule } from 'src/store/store.module';
     CryptoModule,
     TokenModule,
     CookieModule,
+    CustomFieldValidationModule,
   ],
   providers: [
     CustomerService,

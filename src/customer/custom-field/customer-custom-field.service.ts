@@ -6,10 +6,14 @@ import {
   CustomFieldEnumData,
 } from '@prisma/client';
 
+import { CustomFieldValidationService } from 'library/custom-field-validation/custom-field-validation.service';
 import { TimeService } from 'library/time/time.service';
 import { UuidService } from 'library/uuid/uuid.service';
-import { CustomFieldValidationService } from 'src/store/custom-field/custom-field-validation.service';
 
+import {
+  CustomDataItem,
+  CustomFieldInfoLists,
+} from 'library/custom-field-validation/type/custom-field-validation.type';
 import {
   NEED_REQUIRE_DATA_MESSAGE,
   NOT_AVAILABLE_ARRAY_MESSAGE,
@@ -17,10 +21,6 @@ import {
   NOT_AVAILABLE_ENUM_MESSAGE,
 } from 'src/customer/custom-field/error-message/customer-custom-filed.error';
 import { CreateCustomerCustomDataItemDto } from 'src/customer/dto/create-customer.dto';
-import {
-  CustomFieldInfoLists,
-  CustomDataItem,
-} from 'src/store/custom-field/type/custom-field-validation.type';
 
 @Injectable()
 export class CustomerCustomFieldService {

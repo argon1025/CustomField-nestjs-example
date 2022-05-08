@@ -2,29 +2,23 @@ import { Module } from '@nestjs/common';
 
 import { StoreController } from './store.controller';
 import { StoreService } from './store.service';
+import { CustomFieldValidationModule } from 'library/custom-field-validation/custom-field-validation.module';
 import { PrismaModule } from 'library/prisma/prisma.module';
 import { TimeModule } from 'library/time/time.module';
 import { UuidModule } from 'library/uuid/uuid.module';
-import { CustomFieldValidationService } from 'src/store/custom-field/custom-field-validation.service';
 import { CustomFieldRepository } from 'src/store/custom-field/custom-field.repository';
 import { CustomFieldService } from 'src/store/custom-field/custom-field.service';
 import { StoreRepository } from 'src/store/store.repository';
 
 @Module({
-  imports: [UuidModule, PrismaModule, TimeModule],
+  imports: [UuidModule, PrismaModule, TimeModule, CustomFieldValidationModule],
   providers: [
     StoreService,
     StoreRepository,
     CustomFieldService,
     CustomFieldRepository,
-    CustomFieldValidationService,
   ],
   controllers: [StoreController],
-  exports: [
-    StoreRepository,
-    CustomFieldRepository,
-    StoreService,
-    CustomFieldValidationService,
-  ],
+  exports: [StoreRepository, CustomFieldRepository, StoreService],
 })
 export class StoreModule {}

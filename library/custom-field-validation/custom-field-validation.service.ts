@@ -4,7 +4,7 @@ import { Prisma } from '@prisma/client';
 import {
   CustomDataItem,
   CustomFieldInfoLists,
-} from 'src/store/custom-field/type/custom-field-validation.type';
+} from 'library/custom-field-validation/type/custom-field-validation.type';
 
 @Injectable()
 export class CustomFieldValidationService {
