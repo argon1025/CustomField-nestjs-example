@@ -21,6 +21,7 @@ export class CustomFieldRepository {
     require,
     fieldType,
     isArray,
+    onlyAdmin,
     createdAt,
   }: {
     prismaClientService: PrismaClientService;
@@ -31,10 +32,21 @@ export class CustomFieldRepository {
     require: CustomField['require'];
     fieldType: FieldType;
     isArray: CustomField['isArray'];
+    onlyAdmin?: CustomField['onlyAdmin'];
     createdAt: CustomField['createdAt'];
   }) {
     return prismaClientService.customField.create({
-      data: { id, name, store, origin, require, fieldType, isArray, createdAt },
+      data: {
+        id,
+        name,
+        store,
+        origin,
+        require,
+        fieldType,
+        isArray,
+        onlyAdmin,
+        createdAt,
+      },
     });
   }
 
