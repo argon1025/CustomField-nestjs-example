@@ -1,135 +1,80 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import {
   CustomerCustomField,
   CustomField,
   CustomFieldDefaultData,
   CustomFieldEnumData,
-  Prisma,
 } from '@prisma/client';
 
 import { TimeService } from 'library/time/time.service';
 import { UuidService } from 'library/uuid/uuid.service';
+import { CustomFieldValidationService } from 'src/store/custom-field/custom-field-validation.service';
 
+import {
+  NEED_REQUIRE_DATA_MESSAGE,
+  NOT_AVAILABLE_ARRAY_MESSAGE,
+  NOT_AVAILABLE_TYPE_MESSAGE,
+  NOT_AVAILABLE_ENUM_MESSAGE,
+} from 'src/customer/custom-field/error-message/customer-custom-filed.error';
 import { CreateCustomerCustomDataItemDto } from 'src/customer/dto/create-customer.dto';
+import {
+  CustomFieldInfoLists,
+  CustomDataItem,
+} from 'src/store/custom-field/type/custom-field-validation.type';
 
 @Injectable()
 export class CustomerCustomFieldService {
   constructor(
     private readonly timeService: TimeService,
     private readonly uuidService: UuidService,
+    private readonly customFieldValidationService: CustomFieldValidationService,
   ) {}
 
-  // NOTE: 데이터가 있는지 확인하고 없으면 필수데이터인지 확인한다
-  hasAllRequireData({
+  createCustomerValidation({
     storeCustomField,
     customData,
   }: {
-    storeCustomField: (CustomField & {
-      isDefault: CustomFieldDefaultData;
-      isEnum: CustomFieldEnumData;
-    })[];
-    customData: CreateCustomerCustomDataItemDto[];
+    storeCustomField: CustomFieldInfoLists;
+    customData: CustomDataItem[];
   }) {
-    return storeCustomField.every((customFieldData) => {
-      const userCustomDataIndex = customData
-        ? customData.findIndex(
-            (val) => val.customFieldID === customFieldData.id,
-          )
-        : -1;
-      const hasFind = userCustomDataIndex !== -1;
-
-      // 유저가 입력한 데이터가 존재하지않고, 필수 데이터일 경우
-      if (!hasFind && customFieldData.require) {
-        return !!customFieldData.isDefault;
-      }
-
-      return true;
-    });
-  }
-
-  // NOTE: 배열을 사용할 수 있는지 검증한다
-  hasArrayAvailable({
-    storeCustomField,
-    customData,
-  }: {
-    storeCustomField: (CustomField & {
-      isDefault: CustomFieldDefaultData;
-      isEnum: CustomFieldEnumData;
-    })[];
-    customData: CreateCustomerCustomDataItemDto[];
-  }) {
-    return storeCustomField.every((customFieldData) => {
-      const userCustomDataIndex = customData
-        ? customData.findIndex(
-            (val) => val.customFieldID === customFieldData.id,
-          )
-        : -1;
-      const hasFind = userCustomDataIndex !== -1;
-
-      // 유저 요청 커스텀 데이터 배열 길이가 1 이상일 경우 isArray가 true여야 한다.
-      if (hasFind && customData[userCustomDataIndex].content.length > 1) {
-        return customFieldData.isArray === true;
-      }
-      return true;
-    });
-  }
-
-  // NOTE: 모든 타입이 올바른가
-  hasSatisfyConditionType({
-    storeCustomField,
-    customData,
-  }: {
-    storeCustomField: (CustomField & {
-      isDefault: CustomFieldDefaultData;
-      isEnum: CustomFieldEnumData;
-    })[];
-    customData: CreateCustomerCustomDataItemDto[];
-  }) {
-    return storeCustomField.every((customFieldData) => {
-      const userCustomDataIndex = customData
-        ? customData.findIndex(
-            (val) => val.customFieldID === customFieldData.id,
-          )
-        : -1;
-      const hasFind = userCustomDataIndex !== -1;
-
-      if (hasFind) {
-        return customData[userCustomDataIndex].content.every(
-          (val) => typeof val === `${customFieldData.fieldType.toLowerCase()}`,
-        );
-      }
-      return true;
-    });
-  }
-
-  // NOTE: Enum이 정의되었을 경우 전부 Enum 데이터로 구성되었는가
-  hasAvailableEnumType({
-    storeCustomField,
-    customData,
-  }: {
-    storeCustomField: (CustomField & {
-      isDefault: CustomFieldDefaultData;
-      isEnum: CustomFieldEnumData;
-    })[];
-    customData: CreateCustomerCustomDataItemDto[];
-  }) {
-    return storeCustomField.every((customFieldData) => {
-      if (!customFieldData.isEnum) return true;
-      const userCustomDataIndex = customData
-        ? customData.findIndex(
-            (val) => val.customFieldID === customFieldData.id,
-          )
-        : -1;
-      const hasFind = userCustomDataIndex !== -1;
-
-      if (hasFind) {
-        return customData[userCustomDataIndex].content.every((val) => {
-          const enumData = customFieldData.isEnum.content as Prisma.JsonArray;
-          return enumData.includes(val);
+    // NOTE: 스토어 가입시 요구하는 customData가 있을경우에 진행
+    if (storeCustomField.length > 0) {
+      // NOTE: 데이터 존재여부 검증
+      const hasAllRequireData =
+        this.customFieldValidationService.hasAllRequireData({
+          storeCustomField,
+          customData,
         });
-      }
-      return true;
-    });
+      if (!hasAllRequireData)
+        throw new BadRequestException(NEED_REQUIRE_DATA_MESSAGE);
+
+      // NOTE: 배열 소유가능여부 검증
+      const hasArrayAvailable =
+        this.customFieldValidationService.hasArrayAvailable({
+          storeCustomField,
+          customData,
+        });
+      if (!hasArrayAvailable)
+        throw new BadRequestException(NOT_AVAILABLE_ARRAY_MESSAGE);
+
+      // NOTE: 타입 검증
+      const hasAvailableType =
+        this.customFieldValidationService.hasSatisfyConditionType({
+          storeCustomField,
+          customData,
+        });
+      if (!hasAvailableType)
+        throw new BadRequestException(NOT_AVAILABLE_TYPE_MESSAGE);
+
+      // NOTE: Enum 검증
+      const hasAvailableEnumType =
+        this.customFieldValidationService.hasAvailableEnumType({
+          storeCustomField,
+          customData,
+        });
+      if (!hasAvailableEnumType)
+        throw new BadRequestException(NOT_AVAILABLE_ENUM_MESSAGE);
+    }
   }
 
   // NOTE: 레코드 구성
