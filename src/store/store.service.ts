@@ -87,6 +87,7 @@ export class StoreService {
     require,
     fieldType,
     isArray,
+    onlyAdmin,
     storeId,
     adminId,
     enumData,
@@ -97,6 +98,7 @@ export class StoreService {
     require: CustomField['require'];
     fieldType: FieldType;
     isArray: CustomField['isArray'];
+    onlyAdmin?: CustomField['onlyAdmin'];
     enumData?: unknown[];
     defaultData?: unknown[];
     storeId: Store['id'];
@@ -126,6 +128,7 @@ export class StoreService {
         require,
         fieldType,
         isArray,
+        onlyAdmin,
         createdAt: now,
       });
 

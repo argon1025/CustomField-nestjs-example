@@ -31,7 +31,7 @@ export class CustomFieldValidationService {
     return storeCustomField.every((customFieldData) => {
       const userCustomDataIndex = customData
         ? customData.findIndex(
-            (val) => val.customFieldID === customFieldData.id,
+            (val) => val.customFieldId === customFieldData.id,
           )
         : -1;
       const hasFind = userCustomDataIndex !== -1;
@@ -56,7 +56,7 @@ export class CustomFieldValidationService {
     return storeCustomField.every((customFieldData) => {
       const userCustomDataIndex = customData
         ? customData.findIndex(
-            (val) => val.customFieldID === customFieldData.id,
+            (val) => val.customFieldId === customFieldData.id,
           )
         : -1;
       const hasFind = userCustomDataIndex !== -1;
@@ -80,7 +80,7 @@ export class CustomFieldValidationService {
     return storeCustomField.every((customFieldData) => {
       const userCustomDataIndex = customData
         ? customData.findIndex(
-            (val) => val.customFieldID === customFieldData.id,
+            (val) => val.customFieldId === customFieldData.id,
           )
         : -1;
       const hasFind = userCustomDataIndex !== -1;
@@ -106,7 +106,7 @@ export class CustomFieldValidationService {
       if (!customFieldData.isEnum) return true;
       const userCustomDataIndex = customData
         ? customData.findIndex(
-            (val) => val.customFieldID === customFieldData.id,
+            (val) => val.customFieldId === customFieldData.id,
           )
         : -1;
       const hasFind = userCustomDataIndex !== -1;

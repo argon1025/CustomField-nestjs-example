@@ -9,11 +9,13 @@ import {
 import { CustomFieldValidationService } from 'library/custom-field-validation/custom-field-validation.service';
 import { TimeService } from 'library/time/time.service';
 import { UuidService } from 'library/uuid/uuid.service';
+import { CustomerCustomFieldRepository } from 'src/customer/custom-field/customer-custom-field.repository';
 
 import {
   CustomDataItem,
   CustomFieldInfoLists,
 } from 'library/custom-field-validation/type/custom-field-validation.type';
+import { PrismaClientService } from 'library/prisma/type/prisma.type';
 import {
   NEED_REQUIRE_DATA_MESSAGE,
   NOT_AVAILABLE_ARRAY_MESSAGE,
@@ -28,6 +30,7 @@ export class CustomerCustomFieldService {
     private readonly timeService: TimeService,
     private readonly uuidService: UuidService,
     private readonly customFieldValidationService: CustomFieldValidationService,
+    private readonly customerCustomFieldRepository: CustomerCustomFieldRepository,
   ) {}
 
   createCustomerValidation({
@@ -101,7 +104,7 @@ export class CustomerCustomFieldService {
         const now = this.timeService.now();
         const userCustomDataIndex = customData
           ? customData.findIndex(
-              (val) => val.customFieldID === customFieldData.id,
+              (val) => val.customFieldId === customFieldData.id,
             )
           : -1;
         const hasFind = userCustomDataIndex !== -1;
@@ -119,5 +122,46 @@ export class CustomerCustomFieldService {
         };
       })
       .filter((item) => !!item.content);
+  }
+
+  // NOTE: 업데이트 작업 구성
+  PatchCustomerCustomFieldRecords({
+    storeCustomField,
+    customData,
+    customerId,
+    prismaClientService,
+  }: {
+    storeCustomField: (CustomField & {
+      isDefault: CustomFieldDefaultData;
+      isEnum: CustomFieldEnumData;
+    })[];
+    customerId: CustomerCustomField['id'];
+    customData: CreateCustomerCustomDataItemDto[];
+    prismaClientService: PrismaClientService;
+  }) {
+    return storeCustomField
+      .map((customFieldData) => {
+        const userCustomDataIndex = customData
+          ? customData.findIndex(
+              (val) => val.customFieldId === customFieldData.id,
+            )
+          : -1;
+        const hasFind = userCustomDataIndex !== -1;
+        const contentData = hasFind
+          ? customData[userCustomDataIndex].content
+          : customFieldData.isDefault?.content;
+
+        return !contentData
+          ? undefined
+          : this.customerCustomFieldRepository.upsertByCustomerIdAndCustomFieldId(
+              {
+                prismaClientService,
+                customer: customerId,
+                customField: customFieldData.id,
+                content: contentData,
+              },
+            );
+      })
+      .filter((item) => !!item);
   }
 }

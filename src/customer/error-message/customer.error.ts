@@ -17,6 +17,11 @@ export const CUSTOMER_NOT_FOUND_MESSAGE: ExceptionMessageInterface = {
   [CountryCode.EN]: 'Customer not found',
 };
 
+export const CUSTOMER_NOT_THIS_STORE_MESSAGE: ExceptionMessageInterface = {
+  [CountryCode.KR]: '해당 스토어에 소속된 회원이 아닙니다.',
+  [CountryCode.EN]: 'not a member of this store',
+};
+
 export const NOT_MATCH_CUSTOMER_PASSWORD_MESSAGE: ExceptionMessageInterface = {
   [CountryCode.KR]: '패스워드가 일치하지 않습니다',
   [CountryCode.EN]: 'Password do not match',

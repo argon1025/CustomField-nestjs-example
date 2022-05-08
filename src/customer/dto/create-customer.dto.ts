@@ -17,7 +17,7 @@ export class CreateCustomerCustomDataItemDto {
   @IsString()
   @IsNotEmpty()
   @Length(1, 30)
-  readonly customFieldID: CustomField['id'];
+  readonly customFieldId: CustomField['id'];
 
   @IsArray()
   @ArrayNotEmpty()

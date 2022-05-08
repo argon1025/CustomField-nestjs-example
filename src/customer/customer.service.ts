@@ -1,11 +1,12 @@
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Customer, Origin } from '@prisma/client';
+import { Admin, Customer, CustomField, Origin, Store } from '@prisma/client';
 
 import { CryptoService } from 'library/crypto/crypto.service';
 import { PrismaService } from 'library/prisma/prisma.service';
@@ -21,6 +22,7 @@ import {
   CUSTOMER_ALREADY_JOIN_MESSAGE,
   CUSTOMER_CREATE_FAIL_MESSAGE,
   CUSTOMER_NOT_FOUND_MESSAGE,
+  CUSTOMER_NOT_THIS_STORE_MESSAGE,
   NOT_MATCH_CUSTOMER_PASSWORD_MESSAGE,
 } from 'src/customer/error-message/customer.error';
 
@@ -78,13 +80,14 @@ export class CustomerService {
     // NOTE: 스토어 유효성 검사
     await this.storeService.isExist({ storeId: store });
 
-    // NOTE: 스토어 커스터머 커스텀필드 정의여부 조회
-    const storeCustomField =
+    // NOTE: 스토어 커스텀필드 로드, 관리자전용 제외
+    const storeCustomField = (
       await this.customFieldRepository.findManyByIdAndOrigin({
         prismaClientService: this.prismaService,
         origin: Origin.Customer,
         storeId: store,
-      });
+      })
+    ).filter((val) => val.onlyAdmin === false);
 
     // NOTE: 커스텀필드 데이터 검증
     this.customerCustomFieldService.createCustomerValidation({
@@ -129,6 +132,66 @@ export class CustomerService {
       });
     } catch (error) {
       throw new InternalServerErrorException(CUSTOMER_CREATE_FAIL_MESSAGE);
+    }
+  }
+
+  async patchCustomerForStore({
+    storeId,
+    customerId,
+    adminId,
+    name,
+    customData,
+  }: {
+    storeId: Store['id'];
+    customerId: Customer['id'];
+    adminId: Admin['id'];
+    name: Customer['name'];
+    customData: { customFieldId: CustomField['id']; content: any[] }[];
+  }) {
+    // NOTE: 스토어 유효성 검사
+    await this.storeService.isStoreOwner({ adminId, storeId });
+    // NOTE: 사용자 스토어 소속여부 검증
+    const customerData = await this.getMe({ id: customerId });
+    if (!customerData) throw new NotFoundException(CUSTOMER_NOT_FOUND_MESSAGE);
+    if (storeId !== customerData.store)
+      throw new BadRequestException(CUSTOMER_NOT_THIS_STORE_MESSAGE);
+
+    // NOTE: 스토어 커스텀필드 로드, 관리자전용 포함
+    const storeCustomField =
+      await this.customFieldRepository.findManyByIdAndOrigin({
+        prismaClientService: this.prismaService,
+        origin: Origin.Customer,
+        storeId,
+      });
+
+    // NOTE: 커스텀필드 데이터 검증
+    this.customerCustomFieldService.createCustomerValidation({
+      storeCustomField,
+      customData,
+    });
+
+    // NOTE: 데이터 수정
+    try {
+      await this.prismaService.$transaction(async (prismaConnection) => {
+        await this.customerRepository.updateById({
+          prismaClientService: prismaConnection,
+          name,
+          customerId,
+        });
+
+        if (customData) {
+          await Promise.all(
+            this.customerCustomFieldService.PatchCustomerCustomFieldRecords({
+              prismaClientService: prismaConnection,
+              storeCustomField,
+              customData,
+              customerId,
+            }),
+          );
+        }
+      });
+    } catch (error) {
+      throw new InternalServerErrorException();
     }
   }
 }

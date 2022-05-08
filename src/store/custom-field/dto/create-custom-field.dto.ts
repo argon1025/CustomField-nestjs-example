@@ -26,6 +26,10 @@ export class CreateCustomFieldRequestBodyDto {
   @IsBoolean()
   readonly require: CustomField['require'];
 
+  @IsOptional()
+  @IsBoolean()
+  readonly onlyAdmin: CustomField['onlyAdmin'];
+
   @ApiProperty({ enum: FieldType })
   @IsEnum(FieldType)
   readonly fieldType: FieldType;

@@ -5,7 +5,7 @@ import {
 } from '@prisma/client';
 
 export interface CustomDataItem {
-  customFieldID: CustomField['id'];
+  customFieldId: CustomField['id'];
   content: any[];
 }
 export type CustomFieldInfoLists = CustomFieldInfoItem[];
