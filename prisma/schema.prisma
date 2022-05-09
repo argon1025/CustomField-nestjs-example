@@ -82,7 +82,7 @@ model Product {
   id    String @id
   store String
   name  String
-  price String
+  price Int
 
   Categories          CategoriesOnProducts[]
   Products            OrdersOnProducts[]
@@ -111,7 +111,7 @@ model Order {
   store    String
   customer String
   status   String
-  price    String
+  price    Int
 
   Products          OrdersOnProducts[]
   OrderCustomFields OrderCustomField[]
