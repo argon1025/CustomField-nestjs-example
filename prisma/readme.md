@@ -47,3 +47,11 @@
 ### 작업내역
 
 - CustomerCustomField [CustomFieldId, Customer] 컬럼을 함께유니크로 설정했습니다
+
+## `20220509091347_product_order_set_price_int`
+
+`PR Link` : [주문 생성 #41](https://github.com/argon1025/sixshop-assignment-nestjs/pull/41)
+
+### 작업내역
+
+- price 컬럼을 String->Int로 변경했습니다
