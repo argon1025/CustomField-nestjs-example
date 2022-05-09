@@ -1,48 +1,44 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import {
-  CustomerCustomField,
   CustomField,
   CustomFieldDefaultData,
   CustomFieldEnumData,
+  ProductCustomField,
 } from '@prisma/client';
 
 import { CustomFieldValidationService } from 'library/custom-field-validation/custom-field-validation.service';
 import { TimeService } from 'library/time/time.service';
 import { UuidService } from 'library/uuid/uuid.service';
-import { CustomerCustomFieldRepository } from 'src/customer/custom-field/customer-custom-field.repository';
 
 import {
   NEED_REQUIRE_DATA_MESSAGE,
   NOT_AVAILABLE_ARRAY_MESSAGE,
-  NOT_AVAILABLE_TYPE_MESSAGE,
   NOT_AVAILABLE_ENUM_MESSAGE,
+  NOT_AVAILABLE_TYPE_MESSAGE,
 } from 'library/custom-field-validation/error-message/custom-filed.error';
 import {
   CustomDataItem,
   CustomFieldInfoLists,
 } from 'library/custom-field-validation/type/custom-field-validation.type';
-import { PrismaClientService } from 'library/prisma/type/prisma.type';
-import { CreateCustomerCustomDataItemDto } from 'src/customer/dto/create-customer.dto';
 
 @Injectable()
-export class CustomerCustomFieldService {
+export class ProductCustomFieldService {
   constructor(
     private readonly timeService: TimeService,
     private readonly uuidService: UuidService,
     private readonly customFieldValidationService: CustomFieldValidationService,
-    private readonly customerCustomFieldRepository: CustomerCustomFieldRepository,
   ) {}
 
-  createCustomerValidation({
+  createProductValidation({
     storeCustomField,
     customData,
   }: {
     storeCustomField: CustomFieldInfoLists;
     customData: CustomDataItem[];
   }) {
-    // NOTE: 스토어 가입시 요구하는 customData가 있을경우에 진행
+    // NOTE: 물건 생성시 요구하는 커스텀필드가 있는경우에만 진행
     if (storeCustomField.length > 0) {
-      // NOTE: 데이터 존재여부 검증
+      // NOTE: 필수 데이터가 모두 존재하는가
       const hasAllRequireData =
         this.customFieldValidationService.hasAllRequireData({
           storeCustomField,
@@ -51,7 +47,7 @@ export class CustomerCustomFieldService {
       if (!hasAllRequireData)
         throw new BadRequestException(NEED_REQUIRE_DATA_MESSAGE);
 
-      // NOTE: 배열 소유가능여부 검증
+      // NOTE: 여러 아이템을 가질 수 있는 커스텀 옵션인가
       const hasArrayAvailable =
         this.customFieldValidationService.hasArrayAvailable({
           storeCustomField,
@@ -60,7 +56,7 @@ export class CustomerCustomFieldService {
       if (!hasArrayAvailable)
         throw new BadRequestException(NOT_AVAILABLE_ARRAY_MESSAGE);
 
-      // NOTE: 타입 검증
+      // NOTE: 모든 타입이 일치하는가
       const hasAvailableType =
         this.customFieldValidationService.hasSatisfyConditionType({
           storeCustomField,
@@ -69,7 +65,7 @@ export class CustomerCustomFieldService {
       if (!hasAvailableType)
         throw new BadRequestException(NOT_AVAILABLE_TYPE_MESSAGE);
 
-      // NOTE: Enum 검증
+      // NOTE: Enum이 정의된경우 Enum의 데이터로 구성되었는가?
       const hasAvailableEnumType =
         this.customFieldValidationService.hasAvailableEnumType({
           storeCustomField,
@@ -80,88 +76,49 @@ export class CustomerCustomFieldService {
     }
   }
 
-  // NOTE: 레코드 구성
-  createCustomerCustomFieldRecords({
+  createProductCustomFieldRecords({
     storeCustomField,
     customData,
-    customerId,
+    productId,
   }: {
     storeCustomField: (CustomField & {
       isDefault: CustomFieldDefaultData;
       isEnum: CustomFieldEnumData;
     })[];
-    customerId: CustomerCustomField['id'];
-    customData: CreateCustomerCustomDataItemDto[];
+    productId: ProductCustomField['id'];
+    customData: {
+      readonly customFieldId: CustomField['id'];
+      readonly content: any[];
+    }[];
   }): {
-    id: CustomerCustomField['id'];
-    customer: CustomerCustomField['customer'];
-    customField: CustomerCustomField['customField'];
-    content: CustomerCustomField['content'];
-    createdAt: CustomerCustomField['createdAt'];
+    id: ProductCustomField['id'];
+    product: ProductCustomField['product'];
+    customField: ProductCustomField['customField'];
+    content: ProductCustomField['content'];
+    createdAt: ProductCustomField['createdAt'];
   }[] {
     return storeCustomField
-      .map((customFieldData) => {
+      .map((customFieldItem) => {
         const now = this.timeService.now();
         const userCustomDataIndex = customData
           ? customData.findIndex(
-              (val) => val.customFieldId === customFieldData.id,
+              (val) => val.customFieldId === customFieldItem.id,
             )
           : -1;
         const hasFind = userCustomDataIndex !== -1;
         const contentData = hasFind
           ? customData[userCustomDataIndex].content
-          : customFieldData.isDefault?.content;
+          : customFieldItem.isDefault?.content;
         const uuid = this.uuidService.generate();
 
         return {
           id: uuid,
-          customer: customerId,
-          customField: customFieldData.id,
+          product: productId,
+          customField: customFieldItem.id,
           content: contentData,
           createdAt: now,
         };
       })
       .filter((item) => !!item.content);
-  }
-
-  // NOTE: 업데이트 작업 구성
-  PatchCustomerCustomFieldRecords({
-    storeCustomField,
-    customData,
-    customerId,
-    prismaClientService,
-  }: {
-    storeCustomField: (CustomField & {
-      isDefault: CustomFieldDefaultData;
-      isEnum: CustomFieldEnumData;
-    })[];
-    customerId: CustomerCustomField['id'];
-    customData: CreateCustomerCustomDataItemDto[];
-    prismaClientService: PrismaClientService;
-  }) {
-    return storeCustomField
-      .map((customFieldData) => {
-        const userCustomDataIndex = customData
-          ? customData.findIndex(
-              (val) => val.customFieldId === customFieldData.id,
-            )
-          : -1;
-        const hasFind = userCustomDataIndex !== -1;
-        const contentData = hasFind
-          ? customData[userCustomDataIndex].content
-          : customFieldData.isDefault?.content;
-
-        return !contentData
-          ? undefined
-          : this.customerCustomFieldRepository.upsertByCustomerIdAndCustomFieldId(
-              {
-                prismaClientService,
-                customer: customerId,
-                customField: customFieldData.id,
-                content: contentData,
-              },
-            );
-      })
-      .filter((item) => !!item);
   }
 }

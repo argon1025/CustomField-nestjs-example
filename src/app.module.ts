@@ -10,6 +10,7 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 
 import { CustomerModule } from './customer/customer.module';
+import { ProductModule } from './product/product.module';
 import { AllExceptionsFilter } from 'library/all-exception/all-exception.filter';
 import { CountryCode } from 'library/constant/constant';
 import { AdminModule } from 'src/admin/admin.module';
@@ -56,6 +57,7 @@ const validationPipeProvider: Provider = {
     AdminModule,
     StoreModule,
     CustomerModule,
+    ProductModule,
   ],
   providers: [
     allExceptionsFilterProvider,
