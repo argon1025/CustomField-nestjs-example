@@ -1,8 +1,5 @@
 # Sixshop Assignment Nestjs
 
-이성록
-010-5801-3438
-
 ## Table Of Content
 - 프로젝트 소개
     - 프로젝트 핵심 가치
@@ -11,6 +8,7 @@
     - 폴더 구조
     - 코드 컨벤션
     - 스키마 마이그레이션 기록
+    - ERD
 - 프로젝트 시작 방법
   - Docker-compose 로컬 개발환경 구성
   - 패키지 설치
@@ -23,9 +21,9 @@
 
 ## 프로젝트 소개
 ### 프로젝트 핵심 가치
-- 좋은 코드는 읽기 좋은 코드입니다
-- 객체의 역할과 책임에 따라 폴더를 구성합니다
-- 나의 시야를 다른사람과 공유하기위해 노력합니다
+- `좋은 코드`는 `읽기 좋은 코드`입니다
+- 객체의 `역할`과 `책임`에 따라 폴더를 구성합니다
+- 나의 시야를 다른 사람과 `공유`하기 위해 노력합니다
 
 ### 최종 구현 범위
 - Swagger-openAPI
@@ -36,15 +34,19 @@
   - GET : /admin/get-me : 관리자 정보 조회
 - Store
   - POST : /store : 스토어 생성
-  - GET : /store/{storeId}/custom-field : 특정 스토어에 등록된 커스텀필드 조회
-  - POST : /store/{storeId}/custom-field : 특정 스토어에 커스텀필드 등록
-  - PATCH : /store/{storeId}/custom-field : 스토어에 등록된 커스텀 옵션을 수정합니다
-  - DELETE : /store/{storeId}/custom-field/{customFieldId} : 특정 스토어의 커스텀필드 삭제
-  - PATCH : /store/{storeId}/customer/{customerId} : 스토어에 소속된 고객의 기본정보 및 커스텀필드 수정
+  - GET : /store/{storeId}/custom-field : 특정 스토어에 등록된 커스텀 필드 조회
+  - POST : /store/{storeId}/custom-field : 특정 스토어에 커스텀 필드 등록
+  - PATCH : /store/{storeId}/custom-field : 스토어에 등록된 커스텀 옵션을 수정
+  - DELETE : /store/{storeId}/custom-field/{customFieldId} : 특정 스토어의 커스텀 필드 삭제
+  - PATCH : /store/{storeId}/customer/{customerId} : 스토어에 소속된 고객의 기본정보 및 커스텀 필드 수정
 - Customer
   - POST : /customer/auth : 고객 가입
   - POST : /customer/auth/login : 고객 로그인
   - GET : /customer/get-me : 고객 정보 조회
+- Product
+  - POST : /product : 제품을 등록합니다
+- Order
+  - POST : /order : 주문을 생성합니다
 
 ### 기술 스택
 - TypeScript/NestJS(Express)
@@ -78,6 +80,7 @@
 └── ...
 ```
 
+
 ### 코드 컨벤션
 - 패키지 관리
   - 패키지 매니저는 yarn을 사용합니다
@@ -87,32 +90,37 @@
   - [conventionalCommits](https://www.conventionalcommits.org/ko/v1.0.0-beta.4/)을 준수합니다
   - Linear History -> Squash Merge를 사용해서 커밋 히스토리를 관리합니다
 - 네이밍 컨벤션
-  - 폴더이름은 케밥 케이스를 준수하며 용도에따라 `.`으로 구분합니다
+  - 폴더이름은 케밥 케이스를 준수하며 용도에 따라 `.`으로 구분합니다
   - 클래스이름은 파스칼 케이스를 사용합니다
-  - 메서드는 카멜케이스를 사용합니다
+  - 메서드는 카멜 케이스를 사용합니다
 - ESLint
   - Airbnb Rule을 준수합니다
 - Typescript
   - strict 모드를 활성화합니다
   - 각 객체간의 메시지를 주고 받을 때 반드시 typeSafe 하게 타입을 정의합니다
-  - 요청, 응답에 대해서 DTO를 사용하고 알맞은 Validation 및 직렬화, 역직렬화 프로세스를 거쳐야합니다
+  - 요청, 응답에 대해서 DTO를 사용하고 알맞은 Validation 및 직렬화, 역직렬화 프로세스를 거쳐야 합니다
   - Service, Repository 레이어에서는 DTO대신 객체 리터럴로 타입을 명시합니다
   - 매개변수가 2개 이상일 경우 객체 리터럴로 인자를 받습니다
   - Module-Import는 @nestjs 모듈 > 내부 정의 라이브러리 > 타입 순으로 그룹화 해서 정렬합니다
 - NestJS
   - Exception에서 사전 정의되지 않은 에러(500)에 대해서 사용자에게 상세정보를 노출하지 않고 내부 로깅(모니터링)합니다
-  - 예외 처리를할 때 반드시 사용자가 이해 하기 쉬운 에러 메시지를 리턴해야합니다
+  - 예외 처리를할 때 반드시 사용자가 이해하기 쉬운 에러 메시지를 리턴해야합니다
+
 ### 스키마 마이그레이션 기록
 이 프로젝트에서는 Prisma Migrate로 데이터베이스를 마이그레이션합니다
 [이곳](https://github.com/argon1025/sixshop-assignment-nestjs/tree/main/prisma)에서  
 마이그레이션 히스토리를 문서로 관리합니다
+
+### ERD
+![sixshopERD](https://user-images.githubusercontent.com/55491354/167394628-d028013e-d7dc-42b0-b42f-033fe7adc830.png)
+
 <br /><br />
 
 ## 프로젝트 시작 방법
 이 섹션에서는 프로젝트 시작 방법에 대해서 설명합니다
 
 ### Docker-compose 로컬 개발환경 구성
-프로젝트를 시작하기 위해서는 개발 환경이 명시적으로 구성되어있는 Docker-compose를 통해서 로컬 개발환경을 시작할 수 있습니다
+프로젝트를 시작하기 위해서는 개발 환경이 명시적으로 구성되어있는 Docker-compose를 통해서 로컬 개발환경을 시작할 수 있습니다. 
 이 프로젝트 에서는 MySQL가 `Docker-compose`로 구성되어 있습니다
 ```
 $ cd ./sixshop-assignment-nestjs
@@ -129,7 +137,7 @@ $ yarn install
 ### 환경설정 구성
 `environments/.local.env`에서 로컬 환경설정을 구성할 수 있습니다  
 이미 구성된 파일이 있기 때문에 해당 섹션을 생략해도 무방합니다
-> 실제 배포시 AUTH_COOKIE_SECURE 옵션을 반드시 활성화 해야합니다
+> 실제 배포시 *_COOKIE_SECURE 옵션을 반드시 활성화 해야합니다
 ```
 # ##########################################
 # App & Database
@@ -181,13 +189,57 @@ $ yarn start:local:degub
 ```
 
 <br /><br />
+## 커스텀 필드 기능 소개 및 유효성검사 로직
+### 커스텀 필드 폴더 구조
+`library/custom-field-validation` -> 에서 데이터 검증에 필요한 공통 메서드를 정의합니다  
+`src/{도메인}/custom-field.service` -> `custom-field-validation` 메서드를 이용해서 각 도메인에 맞는 데이터 검증 서비스를 작성합니다 
+`src/{도메인}/{도메인}.service` -> `custom-field.service`에서 정의한 데이터 검증 서비스를 이용해서 CRUD를 진행합니다
+
+`커스텀필드 기능`
+- 스토어별로 다른 커스텀 필드를 적용할 수 있습니다
+- 고객 가입, 물건 등록, 주문에 대해서 각각 다른 커스텀 필드를 적용할 수 있습니다
+- 다양한 타입을 선택할 수 있습니다 (String, Number, Boolean)
+- 커스텀 필드의 별칭을 지정할 수 있습니다
+- 해당 커스텀 필드가 Require 지정할 경우 반드시 입력해야 합니다
+- 관리자만 수정이 가능한 커스텀필드(onlyAdmin)을 정의할 수 있습니다 onlyAdmin, Require가 동시에 활성화된 경우엔 관리자 권한으로 요청할 때에만 해당 정보를 요구합니다
+- 여러 개의 원소를 가질 수 있는 배열옵션(isArray)을 가질 수 있습니다
+- 커스텀 필드에서 열거형(enumData)을 정의할 수 있습니다
+- 기본데이터(defaultData)를 정의할 수 있습니다
+
+`커스텀필드 수정 제약사항 및 이유`
+- origin (적용범위 가입 | 물건 등록 | 주문) -> `불가` : 기존에 생성된 커스텀 필드와 무결성이 깨집니다
+- name (커스텀필드 별칭) -> `가능`
+- EnumData (열거형 옵션) ->  `추가만 가능` : default 및 기존 생성 데이터와 무결성이 깨집니다
+- defaultData (기본값) -> `가능`
+- require (필수여부) -> `불가` : 기존에 생성된 커스텀 필드와 데이터 정합성이 깨집니다
+- fieldType (커스텀필드 타입) -> `불가` : EnumData, DefaultData, 기존데이터 모두 무결성이 깨집니다
+- isArray (여러 원소 허용여부) ->  `불가` : EnumData, DefaultData, 기존데이터 모두 무결성이 깨집니다
+
+`데이터 생성, 수정시 유효성검사 순서`
+![image](https://user-images.githubusercontent.com/55491354/167351632-71eb07c0-0ea8-473d-a45d-afd1f0946ae2.png)
+
+커스텀필드를 사용해서 데이터를 생성/수정 할 때 거치는 유효성 검사입니다
+
+`커스텀필드 유효성검사 순서`
+![image](https://user-images.githubusercontent.com/55491354/167347081-972ff3ef-2327-4bf8-8001-de465c84882b.png)
+
+커스텀필드가 생성될 때 거치는 유효성 검사입니다
+
+`커스텀필드 수정 유효성검사 로직`
+![image](https://user-images.githubusercontent.com/55491354/167352544-d38ec898-45ae-4232-ac7d-bcc2dc5ebcfc.png)
+
+커스텀필드를 수정할 때 거치는 유효성 검사입니다
+
+<br /><br />
 
 ## 엔드포인트 소개
 이 섹션에서는 엔드포인트에 대해서 설명합니다
 
 ### Swagger
-해당 프로젝트에서는 Swagger-OpenAPI로 Document를 작성했습니다
-`localhost/api`에서 모든 API 문서를 참조하실 수 있습니다
+![image](https://user-images.githubusercontent.com/55491354/167395730-806370eb-3271-4a42-9b12-61161aa8d735.png)
+
+해당 프로젝트에서는 Swagger-OpenAPI로 Document를 작성했습니다  
+`{ip}/api`에서 모든 API 문서를 참조하실 수 있습니다
 
 #### POST : /admin/auth : 관리자 가입
 ![image](https://user-images.githubusercontent.com/55491354/167343052-e736a77b-9420-4321-80e8-2db52d5e1d86.png)
@@ -219,21 +271,7 @@ $ yarn start:local:degub
 #### POST : /store/{storeId}/custom-field : 특정 스토어에 커스텀필드 등록
 ![image](https://user-images.githubusercontent.com/55491354/167346184-e0afad8c-71d9-4f94-b976-3d56667fc941.png)
 
-커스텀필드를 생성합니다 커스텀필드 기능의 목표와, 유효성검사 로직은 다음과 같습니다
-
-`커스텀필드 목표`
-- 스토어별로 다른 커스텀 필드를 적용할 수 있습니다
-- 고객 가입, 물건 등록, 주문에 대해서 각각 다른 커스텀 필드를 적용할 수 있습니다
-- 다양한 타입을 선택할 수 있습니다 (String, Number, Boolean)
-- 커스텀 필드의 별칭을 지정할 수 있습니다
-- 해당 커스텀필드가 Require 지정할 경우 반드시 입력해야합니다
-- 관리자만 수정이 가능한 커스텀필드(onlyAdmin)을 정의할 수 있습니다 onlyAdmin, Require가 동시에 활성화된 경우엔 관리자 권한으로 요청할 때에만 해당 정보를 요구합니다
-- 여러개의 원소를 가질 수 있는 배열옵션(isArray)을 가질 수 있습니다
-- 커스텀필드에서 열거형(enumData)을 정의할 수 있습니다
-- 기본데이터(defaultData)를 정의할 수 있습니다
-
-`커스텀필드 유효성검사 순서`
-![image](https://user-images.githubusercontent.com/55491354/167347081-972ff3ef-2327-4bf8-8001-de465c84882b.png)
+커스텀필드를 생성합니다
 
 <br />
 
@@ -247,19 +285,6 @@ $ yarn start:local:degub
 ### PATCH : /store/{storeId}/custom-field : 스토어에 등록된 커스텀필드를 수정합니다
 커스텀필드를 수정합니다
 
-`커스텀필드 수정 유효성검사 로직`
-![image](https://user-images.githubusercontent.com/55491354/167352544-d38ec898-45ae-4232-ac7d-bcc2dc5ebcfc.png)
-
-
-`수정 제약사항 및 이유`
-- origin (적용범위 가입 | 물건 등록 | 주문) -> `불가` : 기존에 생성된 커스텀 필드와 무결성이 깨집니다
-- name (커스텀필드 별칭) -> `가능`
-- EnumData (열거형 옵션) ->  `추가만 가능` : default 및 기존 생성 데이터와 무결성이 깨집니다
-- defaultData (기본값) -> `가능`
-- require (필수여부) -> `불가` : 기존에 생성된 커스텀 필드와 데이터 정합성이 깨집니다
-- fieldType (커스텀필드 타입) -> `불가` : EnumData, DefaultData, 기존데이터 모두 무결성이 깨집니다
-- isArray (여러 원소 허용여부) ->  `불가` : EnumData, DefaultData, 기존데이터 모두 무결성이 깨집니다
-
 <br />
 
 #### DELETE : /store/{storeId}/custom-field/{customFieldId} : 특정 스토어의 커스텀필드 삭제
@@ -272,12 +297,10 @@ $ yarn start:local:degub
 #### PATCH : /store/{storeId}/customer/{customerId} : 스토어에 소속된 고객의 기본정보 및  커스텀필드 수정
 ![image](https://user-images.githubusercontent.com/55491354/167350626-abc31af7-2a30-4e28-a0fc-ce5c3241b1f0.png)
 
-`고객정보 수정 커스텀필드 유효성검사 순서`
-![image](https://user-images.githubusercontent.com/55491354/167351632-71eb07c0-0ea8-473d-a45d-afd1f0946ae2.png)
-
 
 스토어 관리자 권한으로 소속된 고객의 정보 및 커스텀 필드를 수정합니다
 
+<br />
 
 #### POST : /customer/auth : 고객 가입
 ![image](https://user-images.githubusercontent.com/55491354/167353092-2c5694dd-21a4-4359-802c-363da373b8b2.png)
@@ -285,11 +308,32 @@ $ yarn start:local:degub
 특정 스토어에 고객을 가입시킵니다
 고객인 스토어에서 정의한 커스텀필드를 입력해 가입할 수 있습니다
 
+<br />
+
 #### POST : /customer/auth/login : 고객 로그인
 
 고객의 정보로 로그인합니다
 어드민 로그인과 동일한 로직입니다.
 
+<br />
+
 #### GET : /customer/get-me : 고객 정보 조회
 
 현재 로그인된 유저의 정보 및 등록된 커스텀필드를 모두 로드합니다
+
+<br />
+
+
+#### POST : /product : 제품을 등록합니다
+![image](https://user-images.githubusercontent.com/55491354/167392964-b04b6281-a808-418f-97d1-e602a2c7c5f1.png)
+
+
+제품을 등록합니다.
+
+<br />
+
+#### POST : /order : 주문을 생성합니다
+![image](https://user-images.githubusercontent.com/55491354/167393474-ebdf2ecb-9970-4bdc-a79d-1f8ded089f6b.png)
+
+주문을 생성합니다
+<br />
