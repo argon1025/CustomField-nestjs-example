@@ -12,16 +12,16 @@ import { UuidService } from 'library/uuid/uuid.service';
 import { CustomerCustomFieldRepository } from 'src/customer/custom-field/customer-custom-field.repository';
 
 import {
-  CustomDataItem,
-  CustomFieldInfoLists,
-} from 'library/custom-field-validation/type/custom-field-validation.type';
-import { PrismaClientService } from 'library/prisma/type/prisma.type';
-import {
   NEED_REQUIRE_DATA_MESSAGE,
   NOT_AVAILABLE_ARRAY_MESSAGE,
   NOT_AVAILABLE_TYPE_MESSAGE,
   NOT_AVAILABLE_ENUM_MESSAGE,
-} from 'src/customer/custom-field/error-message/customer-custom-filed.error';
+} from 'library/custom-field-validation/error-message/custom-filed.error';
+import {
+  CustomDataItem,
+  CustomFieldInfoLists,
+} from 'library/custom-field-validation/type/custom-field-validation.type';
+import { PrismaClientService } from 'library/prisma/type/prisma.type';
 import { CreateCustomerCustomDataItemDto } from 'src/customer/dto/create-customer.dto';
 
 @Injectable()
