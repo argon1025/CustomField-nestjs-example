@@ -28,6 +28,8 @@
 - 나의 시야를 다른사람과 공유하기위해 노력합니다
 
 ### 최종 구현 범위
+- Swagger-openAPI
+  - /api : API Document
 - Admin
   - POST : /admin/auth : 관리자 가입
   - POST : /admin/auth/login : 관리자 로그인
@@ -36,6 +38,7 @@
   - POST : /store : 스토어 생성
   - GET : /store/{storeId}/custom-field : 특정 스토어에 등록된 커스텀필드 조회
   - POST : /store/{storeId}/custom-field : 특정 스토어에 커스텀필드 등록
+  - PATCH : /store/{storeId}/custom-field : 스토어에 등록된 커스텀 옵션을 수정합니다
   - DELETE : /store/{storeId}/custom-field/{customFieldId} : 특정 스토어의 커스텀필드 삭제
   - PATCH : /store/{storeId}/customer/{customerId} : 스토어에 소속된 고객의 기본정보 및 커스텀필드 수정
 - Customer
@@ -106,6 +109,8 @@
 <br /><br />
 
 ## 프로젝트 시작 방법
+이 섹션에서는 프로젝트 시작 방법에 대해서 설명합니다
+
 ### Docker-compose 로컬 개발환경 구성
 프로젝트를 시작하기 위해서는 개발 환경이 명시적으로 구성되어있는 Docker-compose를 통해서 로컬 개발환경을 시작할 수 있습니다
 이 프로젝트 에서는 MySQL가 `Docker-compose`로 구성되어 있습니다
@@ -178,3 +183,113 @@ $ yarn start:local:degub
 <br /><br />
 
 ## 엔드포인트 소개
+이 섹션에서는 엔드포인트에 대해서 설명합니다
+
+### Swagger
+해당 프로젝트에서는 Swagger-OpenAPI로 Document를 작성했습니다
+`localhost/api`에서 모든 API 문서를 참조하실 수 있습니다
+
+#### POST : /admin/auth : 관리자 가입
+![image](https://user-images.githubusercontent.com/55491354/167343052-e736a77b-9420-4321-80e8-2db52d5e1d86.png)
+
+관리자 계정을 생성합니다  
+관리자는 스토어를 생성하고 관리할 수 있습니다  
+
+#### POST : /admin/auth/login : 관리자 로그인
+![image](https://user-images.githubusercontent.com/55491354/167344486-4ee4ac78-5829-4f7e-ae0a-ee2ff9e3c556.png)
+
+관리자로 로그인합니다  
+로그인 시 JWT토큰을 HTTPOnly Cookie로 발급합니다
+
+
+#### GET : /admin/get-me : 관리자 정보 조회
+![image](https://user-images.githubusercontent.com/55491354/167344651-4a5367b3-8fde-471e-a612-6d3caf50e7bd.png)
+
+로그인된 관리자 정보를 조회합니다
+
+<br />
+
+#### POST : /store : 스토어 생성
+![image](https://user-images.githubusercontent.com/55491354/167344912-12912f14-31d4-4921-b678-4a1dd2954226.png)
+
+관리자 계정으로 스토어를 생성합니다
+
+<br />
+
+#### POST : /store/{storeId}/custom-field : 특정 스토어에 커스텀필드 등록
+![image](https://user-images.githubusercontent.com/55491354/167346184-e0afad8c-71d9-4f94-b976-3d56667fc941.png)
+
+커스텀필드를 생성합니다 커스텀필드 기능의 목표와, 유효성검사 로직은 다음과 같습니다
+
+`커스텀필드 목표`
+- 스토어별로 다른 커스텀 필드를 적용할 수 있습니다
+- 고객 가입, 물건 등록, 주문에 대해서 각각 다른 커스텀 필드를 적용할 수 있습니다
+- 다양한 타입을 선택할 수 있습니다 (String, Number, Boolean)
+- 커스텀 필드의 별칭을 지정할 수 있습니다
+- 해당 커스텀필드가 Require 지정할 경우 반드시 입력해야합니다
+- 관리자만 수정이 가능한 커스텀필드(onlyAdmin)을 정의할 수 있습니다 onlyAdmin, Require가 동시에 활성화된 경우엔 관리자 권한으로 요청할 때에만 해당 정보를 요구합니다
+- 여러개의 원소를 가질 수 있는 배열옵션(isArray)을 가질 수 있습니다
+- 커스텀필드에서 열거형(enumData)을 정의할 수 있습니다
+- 기본데이터(defaultData)를 정의할 수 있습니다
+
+`커스텀필드 유효성검사 순서`
+![image](https://user-images.githubusercontent.com/55491354/167347081-972ff3ef-2327-4bf8-8001-de465c84882b.png)
+
+<br />
+
+#### GET : /store/{storeId}/custom-field : 특정 스토어에 등록된 커스텀필드 조회
+![image](https://user-images.githubusercontent.com/55491354/167347811-51c7cdba-5bb5-40e7-b10d-d8f73c3fef2c.png)
+
+특정 스토어의 커스텀필드를 조회합니다
+
+<br />
+
+### PATCH : /store/{storeId}/custom-field : 스토어에 등록된 커스텀필드를 수정합니다
+커스텀필드를 수정합니다
+
+`커스텀필드 수정 유효성검사 로직`
+![image](https://user-images.githubusercontent.com/55491354/167352544-d38ec898-45ae-4232-ac7d-bcc2dc5ebcfc.png)
+
+
+`수정 제약사항 및 이유`
+- origin (적용범위 가입 | 물건 등록 | 주문) -> `불가` : 기존에 생성된 커스텀 필드와 무결성이 깨집니다
+- name (커스텀필드 별칭) -> `가능`
+- EnumData (열거형 옵션) ->  `추가만 가능` : default 및 기존 생성 데이터와 무결성이 깨집니다
+- defaultData (기본값) -> `가능`
+- require (필수여부) -> `불가` : 기존에 생성된 커스텀 필드와 데이터 정합성이 깨집니다
+- fieldType (커스텀필드 타입) -> `불가` : EnumData, DefaultData, 기존데이터 모두 무결성이 깨집니다
+- isArray (여러 원소 허용여부) ->  `불가` : EnumData, DefaultData, 기존데이터 모두 무결성이 깨집니다
+
+<br />
+
+#### DELETE : /store/{storeId}/custom-field/{customFieldId} : 특정 스토어의 커스텀필드 삭제
+![image](https://user-images.githubusercontent.com/55491354/167348371-c4c45552-78ab-4d48-8e3c-af16a692f2d9.png)
+
+스토어에서 관리하고있는 커스텀필드를 삭제합니다
+
+<br />
+
+#### PATCH : /store/{storeId}/customer/{customerId} : 스토어에 소속된 고객의 기본정보 및  커스텀필드 수정
+![image](https://user-images.githubusercontent.com/55491354/167350626-abc31af7-2a30-4e28-a0fc-ce5c3241b1f0.png)
+
+`고객정보 수정 커스텀필드 유효성검사 순서`
+![image](https://user-images.githubusercontent.com/55491354/167351632-71eb07c0-0ea8-473d-a45d-afd1f0946ae2.png)
+
+
+스토어 관리자 권한으로 소속된 고객의 정보 및 커스텀 필드를 수정합니다
+
+
+#### POST : /customer/auth : 고객 가입
+![image](https://user-images.githubusercontent.com/55491354/167353092-2c5694dd-21a4-4359-802c-363da373b8b2.png)
+
+특정 스토어에 고객을 가입시킵니다
+고객인 스토어에서 정의한 커스텀필드를 입력해 가입할 수 있습니다
+
+#### POST : /customer/auth/login : 고객 로그인
+
+고객의 정보로 로그인합니다
+어드민 로그인과 동일한 로직입니다.
+
+#### GET : /customer/get-me : 고객 정보 조회
+
+현재 로그인된 유저의 정보 및 등록된 커스텀필드를 모두 로드합니다
