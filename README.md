@@ -109,11 +109,71 @@
 ### Docker-compose 로컬 개발환경 구성
 프로젝트를 시작하기 위해서는 개발 환경이 명시적으로 구성되어있는 Docker-compose를 통해서 로컬 개발환경을 시작할 수 있습니다
 이 프로젝트 에서는 MySQL가 `Docker-compose`로 구성되어 있습니다
+```
+$ cd ./sixshop-assignment-nestjs
+$ docker-compose up
+```
+컨테이너가 정상적으로 실행되었을 경우 다음으로 넘어갑니다
+> MySQL 데이터는 프로젝트 폴더 ./docker/mysql/mysql-data에 저장됩니다
 
 ### 패키지 설치
+```
+$ yarn install
+```
+
 ### 환경설정 구성
+`environments/.local.env`에서 로컬 환경설정을 구성할 수 있습니다  
+이미 구성된 파일이 있기 때문에 해당 섹션을 생략해도 무방합니다
+> 실제 배포시 AUTH_COOKIE_SECURE 옵션을 반드시 활성화 해야합니다
+```
+# ##########################################
+# App & Database
+# NestJS앱, 데이터베이스 설정
+# ##########################################
+DATABASE_URL="mysql://root:root@localhost:3306/sixshop?connect_timeout=100&pool_timeout=100&socket_timeout=100"
+SERVER_PORT=80
+SALT_ROUND=10
+
+# ##########################################
+# Admin
+# Admin 로그인정책 설정
+# ##########################################
+JWT_ADMIN_SECRET_KEY=1q2w3e4r
+JWT_ADMIN_EXPIRES_IN=30m
+ADMIN_COOKIE_HTTP_ONLY=true
+ADMIN_COOKIE_SECURE=false
+ADMIN_COOKIE_PATH=/
+ADMIN_COOKIE_DOMAIN=localhost
+ADMIN_COOKIE_MAX_AGE=1800000
+ADMIN_COOKIE_SAME_SITE=strict
+
+# ##########################################
+# Customer
+# Customer 로그인정책 설정
+# ##########################################
+JWT_CUSTOMER_SECRET_KEY=4r3e2w1q
+JWT_CUSTOMER_EXPIRES_IN=30m
+CUSTOMER_COOKIE_HTTP_ONLY=true
+CUSTOMER_COOKIE_SECURE=false
+CUSTOMER_COOKIE_PATH=/
+CUSTOMER_COOKIE_DOMAIN=localhost
+CUSTOMER_COOKIE_MAX_AGE=1800000
+CUSTOMER_COOKIE_SAME_SITE=strict
+```
+
 ### Prisma 마이그레이션 Sync, Prisma Client 생성
-### NestJS 앱 실행 및 Swagger Document
+이 프로젝트에서는 Prisma로 마이그레이션을 관리합니다
+```
+$ yarn prisma:migrate:local
+```
+위 명령어를 통해 로컬환경과 마이그레이션 기록을 동기화하고 서버 애플리케이션 실행을 위한 Prisma Client 모듈이 생성됩니다
+
+### NestJS 앱 실행
+```
+$ yarn start:local
+$ yarn start:local:watch
+$ yarn start:local:degub
+```
 
 <br /><br />
 
