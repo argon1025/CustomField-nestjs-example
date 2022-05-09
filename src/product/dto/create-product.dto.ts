@@ -10,6 +10,7 @@ import {
   ArrayMaxSize,
   IsOptional,
   ValidateNested,
+  IsNumber,
 } from 'class-validator';
 
 export class CreateProductCustomDataItemDto {
@@ -27,15 +28,14 @@ export class CreateProductCustomDataItemDto {
 export class CreateProductRequestBodyDto {
   @IsString()
   @Length(1, 30)
-  storeId: Product['store'];
+  readonly storeId: Product['store'];
 
   @IsString()
   @Length(1, 30)
-  name: Product['name'];
+  readonly name: Product['name'];
 
-  @IsString()
-  @Length(1, 30)
-  price: Product['price'];
+  @IsNumber()
+  readonly price: Product['price'];
 
   @IsOptional()
   @ArrayNotEmpty()

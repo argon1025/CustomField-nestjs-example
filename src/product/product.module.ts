@@ -26,5 +26,6 @@ import { StoreModule } from 'src/store/store.module';
     ProductRepository,
   ],
   controllers: [ProductController],
+  exports: [ProductRepository],
 })
 export class ProductModule {}
