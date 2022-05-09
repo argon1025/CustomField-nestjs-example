@@ -17,6 +17,7 @@ import { AdminModule } from 'src/admin/admin.module';
 import { StoreModule } from 'src/store/store.module';
 
 import { ExceptionMessageInterface } from 'library/all-exception/type/all-exception.type';
+import { OrderModule } from './order/order.module';
 
 const allExceptionsFilterProvider: Provider = {
   provide: APP_FILTER,
@@ -58,6 +59,7 @@ const validationPipeProvider: Provider = {
     StoreModule,
     CustomerModule,
     ProductModule,
+    OrderModule,
   ],
   providers: [
     allExceptionsFilterProvider,

@@ -34,5 +34,6 @@ import { StoreModule } from 'src/store/store.module';
     CustomerTokenStrategy,
   ],
   controllers: [CustomerController],
+  exports: [CustomerRepository],
 })
 export class CustomerModule {}
