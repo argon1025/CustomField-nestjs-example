@@ -1,39 +1,5 @@
-# Sixshop Assignment Nestjs
+# CustomField-nestjs-example
 
-## Table Of Content
-- [프로젝트 소개](https://github.com/argon1025/sixshop-assignment-nestjs#%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EC%86%8C%EA%B0%9C)
-    - [프로젝트 핵심 가치](https://github.com/argon1025/sixshop-assignment-nestjs#%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%ED%95%B5%EC%8B%AC-%EA%B0%80%EC%B9%98)
-    - [최종 구현 범위](https://github.com/argon1025/sixshop-assignment-nestjs#%EC%B5%9C%EC%A2%85-%EA%B5%AC%ED%98%84-%EB%B2%94%EC%9C%84)
-    - [기술 스택](https://github.com/argon1025/sixshop-assignment-nestjs#%EA%B8%B0%EC%88%A0-%EC%8A%A4%ED%83%9D)
-    - [폴더 구조](https://github.com/argon1025/sixshop-assignment-nestjs#%ED%8F%B4%EB%8D%94-%EA%B5%AC%EC%A1%B0)
-    - [코드 컨벤션](https://github.com/argon1025/sixshop-assignment-nestjs#%EC%BD%94%EB%93%9C-%EC%BB%A8%EB%B2%A4%EC%85%98)
-    - [스키마 마이그레이션 기록](https://github.com/argon1025/sixshop-assignment-nestjs#%EC%8A%A4%ED%82%A4%EB%A7%88-%EB%A7%88%EC%9D%B4%EA%B7%B8%EB%A0%88%EC%9D%B4%EC%85%98-%EA%B8%B0%EB%A1%9D)
-    - [ERD](https://github.com/argon1025/sixshop-assignment-nestjs#erd)
-- [프로젝트 시작 방법](https://github.com/argon1025/sixshop-assignment-nestjs#%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EC%8B%9C%EC%9E%91-%EB%B0%A9%EB%B2%95)
-  - [Docker-compose 로컬 개발환경 구성](https://github.com/argon1025/sixshop-assignment-nestjs#docker-compose-%EB%A1%9C%EC%BB%AC-%EA%B0%9C%EB%B0%9C%ED%99%98%EA%B2%BD-%EA%B5%AC%EC%84%B1)
-  - [패키지 설치](https://github.com/argon1025/sixshop-assignment-nestjs#%ED%8C%A8%ED%82%A4%EC%A7%80-%EC%84%A4%EC%B9%98)
-  - [환경설정 구성](https://github.com/argon1025/sixshop-assignment-nestjs#%ED%99%98%EA%B2%BD%EC%84%A4%EC%A0%95-%EA%B5%AC%EC%84%B1)
-  - [마이그레이션 Sync, Prisma Client 생성](https://github.com/argon1025/sixshop-assignment-nestjs#prisma-%EB%A7%88%EC%9D%B4%EA%B7%B8%EB%A0%88%EC%9D%B4%EC%85%98-sync-prisma-client-%EC%83%9D%EC%84%B1)
-  - [NestJS 앱 실행](https://github.com/argon1025/sixshop-assignment-nestjs#nestjs-%EC%95%B1-%EC%8B%A4%ED%96%89)
-- [커스텀 필드 기능 소개 및 유효성 검사 로직](https://github.com/argon1025/sixshop-assignment-nestjs#%EC%BB%A4%EC%8A%A4%ED%85%80-%ED%95%84%EB%93%9C-%EA%B8%B0%EB%8A%A5-%EC%86%8C%EA%B0%9C-%EB%B0%8F-%EC%9C%A0%ED%9A%A8%EC%84%B1%EA%B2%80%EC%82%AC-%EB%A1%9C%EC%A7%81)
-- [엔드포인트 소개](https://github.com/argon1025/sixshop-assignment-nestjs#%EC%97%94%EB%93%9C%ED%8F%AC%EC%9D%B8%ED%8A%B8-%EC%86%8C%EA%B0%9C)
-  - [Swagger](https://github.com/argon1025/sixshop-assignment-nestjs#swagger)
-  - [POST : /admin/auth : 관리자 가입](https://github.com/argon1025/sixshop-assignment-nestjs#post--adminauth--%EA%B4%80%EB%A6%AC%EC%9E%90-%EA%B0%80%EC%9E%85)
-  - [POST : /admin/auth/login : 관리자 로그인](https://github.com/argon1025/sixshop-assignment-nestjs#post--adminauthlogin--%EA%B4%80%EB%A6%AC%EC%9E%90-%EB%A1%9C%EA%B7%B8%EC%9D%B8)
-  - [GET : /admin/get-me : 관리자 정보 조회](https://github.com/argon1025/sixshop-assignment-nestjs#get--adminget-me--%EA%B4%80%EB%A6%AC%EC%9E%90-%EC%A0%95%EB%B3%B4-%EC%A1%B0%ED%9A%8C)
-  - [POST : /store : 스토어 생성](https://github.com/argon1025/sixshop-assignment-nestjs#post--store--%EC%8A%A4%ED%86%A0%EC%96%B4-%EC%83%9D%EC%84%B1)
-  - [POST : /store/{storeId}/custom-field : 특정 스토어에 커스텀 필드 등록](https://github.com/argon1025/sixshop-assignment-nestjs#post--storestoreidcustom-field--%ED%8A%B9%EC%A0%95-%EC%8A%A4%ED%86%A0%EC%96%B4%EC%97%90-%EC%BB%A4%EC%8A%A4%ED%85%80%ED%95%84%EB%93%9C-%EB%93%B1%EB%A1%9D)
-  - [GET : /store/{storeId}/custom-field : 특정 스토어에 등록된 커스텀 필드 조회](https://github.com/argon1025/sixshop-assignment-nestjs#get--storestoreidcustom-field--%ED%8A%B9%EC%A0%95-%EC%8A%A4%ED%86%A0%EC%96%B4%EC%97%90-%EB%93%B1%EB%A1%9D%EB%90%9C-%EC%BB%A4%EC%8A%A4%ED%85%80%ED%95%84%EB%93%9C-%EC%A1%B0%ED%9A%8C)
-  - [PATCH : /store/{storeId}/custom-field : 스토어에 등록된 커스텀 필드 수정](https://github.com/argon1025/sixshop-assignment-nestjs#patch--storestoreidcustom-field--%EC%8A%A4%ED%86%A0%EC%96%B4%EC%97%90-%EB%93%B1%EB%A1%9D%EB%90%9C-%EC%BB%A4%EC%8A%A4%ED%85%80%ED%95%84%EB%93%9C-%EC%88%98%EC%A0%95)
-  - [DELETE : /store/{storeId}/custom-field/{customFieldId} : 특정 스토어의 커스텀 필드 삭제](https://github.com/argon1025/sixshop-assignment-nestjs#delete--storestoreidcustom-fieldcustomfieldid--%ED%8A%B9%EC%A0%95-%EC%8A%A4%ED%86%A0%EC%96%B4%EC%9D%98-%EC%BB%A4%EC%8A%A4%ED%85%80%ED%95%84%EB%93%9C-%EC%82%AD%EC%A0%9C)
-  - [PATCH : /store/{storeId}/customer/{customerId} : 스토어에 소속된 고객의 기본정보 및 커스텀 필드 수정](https://github.com/argon1025/sixshop-assignment-nestjs#patch--storestoreidcustomercustomerid--%EC%8A%A4%ED%86%A0%EC%96%B4%EC%97%90-%EC%86%8C%EC%86%8D%EB%90%9C-%EA%B3%A0%EA%B0%9D%EC%9D%98-%EA%B8%B0%EB%B3%B8%EC%A0%95%EB%B3%B4-%EB%B0%8F-%EC%BB%A4%EC%8A%A4%ED%85%80%ED%95%84%EB%93%9C-%EC%88%98%EC%A0%95)
-  - [POST : /customer/auth : 고객 가입](https://github.com/argon1025/sixshop-assignment-nestjs#post--customerauth--%EA%B3%A0%EA%B0%9D-%EA%B0%80%EC%9E%85)
-  - [POST : /customer/auth/login : 고객 로그인](https://github.com/argon1025/sixshop-assignment-nestjs#post--customerauthlogin--%EA%B3%A0%EA%B0%9D-%EB%A1%9C%EA%B7%B8%EC%9D%B8)
-  - [GET : /customer/get-me : 고객 정보 조회](https://github.com/argon1025/sixshop-assignment-nestjs#get--customerget-me--%EA%B3%A0%EA%B0%9D-%EC%A0%95%EB%B3%B4-%EC%A1%B0%ED%9A%8C)
-  - [POST : /product : 제품을 등록합니다](https://github.com/argon1025/sixshop-assignment-nestjs#post--product--%EC%A0%9C%ED%92%88%EC%9D%84-%EB%93%B1%EB%A1%9D%ED%95%A9%EB%8B%88%EB%8B%A4)
-  - [POST : /order : 주문을 생성합니다](https://github.com/argon1025/sixshop-assignment-nestjs#post--order--%EC%A3%BC%EB%AC%B8%EC%9D%84-%EC%83%9D%EC%84%B1%ED%95%A9%EB%8B%88%EB%8B%A4)
-
-<br /><br />
 
 ## 프로젝트 소개
 ### 프로젝트 핵심 가치
